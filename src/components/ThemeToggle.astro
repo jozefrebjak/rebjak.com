@@ -7,11 +7,11 @@
   class="p-2 rounded-md text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
   aria-label="Toggle theme"
 >
-  <!-- Sun icon (shown in dark mode) -->
+  <!-- Sun icon -->
   <svg
     id="icon-sun"
     xmlns="http://www.w3.org/2000/svg"
-    class="w-5 h-5 hidden dark:block"
+    class="w-5 h-5"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -24,11 +24,11 @@
     />
   </svg>
 
-  <!-- Moon icon (shown in light mode) -->
+  <!-- Moon icon -->
   <svg
     id="icon-moon"
     xmlns="http://www.w3.org/2000/svg"
-    class="w-5 h-5 block dark:hidden"
+    class="w-5 h-5"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -44,9 +44,25 @@
 
 <script>
   const btn = document.getElementById('theme-toggle');
+  const sun = document.getElementById('icon-sun');
+  const moon = document.getElementById('icon-moon');
+
+  function updateIcons(isDark: boolean) {
+    if (isDark) {
+      sun?.removeAttribute('hidden');
+      moon?.setAttribute('hidden', '');
+    } else {
+      moon?.removeAttribute('hidden');
+      sun?.setAttribute('hidden', '');
+    }
+  }
+
+  // Set initial icon state
+  updateIcons(document.documentElement.classList.contains('dark'));
 
   btn?.addEventListener('click', () => {
     const isDark = document.documentElement.classList.toggle('dark');
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    updateIcons(isDark);
   });
 </script>

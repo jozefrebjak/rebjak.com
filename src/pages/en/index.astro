@@ -18,7 +18,7 @@ const t = useTranslations(lang);
         {t('hero.tagline')}
       </h1>
       <p class="text-lg text-zinc-600 dark:text-zinc-400 leading-relaxed mb-10">
-        Software developer interested in clean code, good tools and things that simply work. I write about things I learn.
+        I work with networks, servers and Linux — and write code that holds it all together. I'm into automation, infrastructure and the NetDevOps approach to managing environments.
       </p>
       <div class="flex flex-wrap gap-3">
         <a
@@ -47,9 +47,9 @@ const t = useTranslations(lang);
   <section class="max-w-4xl mx-auto px-4 sm:px-6 pb-16">
     <div class="grid sm:grid-cols-3 gap-4">
       {[
-        { href: '/en/cv', icon: '📄', title: t('nav.cv'), desc: 'Experience, education, skills' },
-        { href: '/en/portfolio', icon: '🛠', title: t('nav.portfolio'), desc: 'Projects and work' },
-        { href: '/en/blog', icon: '✍️', title: t('nav.blog'), desc: 'Articles and notes' },
+        { href: '/en/cv', icon: '📄', title: t('nav.cv'), desc: 'Experience, technologies, skills' },
+        { href: '/en/portfolio', icon: '🛠️', title: t('nav.portfolio'), desc: 'Projects and tools' },
+        { href: '/en/blog', icon: '✍️', title: t('nav.blog'), desc: 'Networks, Linux, automation' },
       ].map(({ href, icon, title, desc }) => (
         <a
           href={href}

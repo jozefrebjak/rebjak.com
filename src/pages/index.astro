@@ -18,8 +18,8 @@ const t = useTranslations(lang);
       </h1>
       <p class="text-lg text-zinc-600 dark:text-zinc-400 leading-relaxed mb-10">
         {lang === 'sk'
-          ? 'Softvérový vývojár so záujmom o čistý kód, dobré nástroje a veci, ktoré jednoducho fungujú. Píšem o veciach, ktoré sa naučím.'
-          : 'Software developer interested in clean code, good tools and things that simply work. I write about things I learn.'}
+          ? 'Pracujem so sieťami, servermi a Linuxom — a píšem kód, ktorý to celé drží pokope. Zaujímam sa o automatizáciu, infraštruktúru a NetDevOps prístup k správe prostredí.'
+          : 'I work with networks, servers and Linux — and write code that holds it all together. I\'m into automation, infrastructure and the NetDevOps approach to managing environments.'}
       </p>
       <div class="flex flex-wrap gap-3">
         <a
@@ -52,19 +52,19 @@ const t = useTranslations(lang);
           href: lang === 'en' ? '/en/cv' : '/cv',
           icon: '📄',
           title: t('nav.cv'),
-          desc: lang === 'sk' ? 'Skúsenosti, vzdelanie, zručnosti' : 'Experience, education, skills',
+          desc: lang === 'sk' ? 'Skúsenosti, technológie, zručnosti' : 'Experience, technologies, skills',
         },
         {
           href: lang === 'en' ? '/en/portfolio' : '/portfolio',
-          icon: '🛠',
+          icon: '🛠️',
           title: t('nav.portfolio'),
-          desc: lang === 'sk' ? 'Projekty a práce' : 'Projects and work',
+          desc: lang === 'sk' ? 'Projekty a nástroje' : 'Projects and tools',
         },
         {
           href: lang === 'en' ? '/en/blog' : '/blog',
           icon: '✍️',
           title: t('nav.blog'),
-          desc: lang === 'sk' ? 'Články a poznámky' : 'Articles and notes',
+          desc: lang === 'sk' ? 'Siete, Linux, automatizácia' : 'Networks, Linux, automation',
         },
       ].map(({ href, icon, title, desc }) => (
         <a

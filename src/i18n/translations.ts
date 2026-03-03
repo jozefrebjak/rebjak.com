@@ -18,7 +18,7 @@ export const ui = {
 
     // Hero
     'hero.greeting': 'Ahoj, som',
-    'hero.tagline': 'Vývojár, ktorý rád stavia veci.',
+    'hero.tagline': 'NetDevOps inžinier. Siete, servery, kód.',
     'hero.cta.cv': 'Pozri CV',
     'hero.cta.portfolio': 'Moje projekty',
     'hero.cta.blog': 'Čítaj blog',
@@ -39,7 +39,7 @@ export const ui = {
 
     // Blog
     'blog.title': 'Blog',
-    'blog.subtitle': 'Myšlienky, návody a poznámky z praxe',
+    'blog.subtitle': 'Siete, Linux, automatizácia a veci z praxe',
     'blog.readmore': 'Čítať ďalej',
     'blog.minutes': 'min čítania',
 
@@ -61,7 +61,7 @@ export const ui = {
 
     // Hero
     'hero.greeting': 'Hi, I\'m',
-    'hero.tagline': 'A developer who loves building things.',
+    'hero.tagline': 'NetDevOps engineer. Networks, servers, code.',
     'hero.cta.cv': 'View CV',
     'hero.cta.portfolio': 'My projects',
     'hero.cta.blog': 'Read blog',
@@ -82,7 +82,7 @@ export const ui = {
 
     // Blog
     'blog.title': 'Blog',
-    'blog.subtitle': 'Thoughts, tutorials and notes from practice',
+    'blog.subtitle': 'Networks, Linux, automation and notes from the field',
     'blog.readmore': 'Read more',
     'blog.minutes': 'min read',
 
