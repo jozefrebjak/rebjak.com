@@ -1,6 +1,6 @@
 # rebjak.com
 
-Personal website of Jozef Rebjak — NetDevOps engineer.
+Personal website of Jozef Rebjak — DevOps engineer.
 
 **Live:** [rebjak.com](https://rebjak.com)
 
