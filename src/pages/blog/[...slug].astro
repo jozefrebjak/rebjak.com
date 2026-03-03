@@ -1,0 +1,65 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getLangFromUrl } from '../../i18n/translations';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft && data.lang === 'sk');
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const lang = getLangFromUrl(Astro.url);
+
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('sk-SK', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+
+function readingTime(body: string): number {
+  return Math.ceil(body.split(/\s+/).length / 200);
+}
+---
+
+<BaseLayout title={post.data.title} description={post.data.description}>
+  <article class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+    <!-- Back link -->
+    <a
+      href="/blog"
+      class="inline-flex items-center gap-1 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 mb-8 transition-colors"
+    >
+      ← Blog
+    </a>
+
+    <!-- Header -->
+    <header class="mb-10">
+      <div class="flex flex-wrap gap-1.5 mb-4">
+        {post.data.tags.map((tag: string) => (
+          <span class="px-2 py-0.5 rounded text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+            #{tag}
+          </span>
+        ))}
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-bold text-zinc-900 dark:text-zinc-100 leading-tight mb-4">
+        {post.data.title}
+      </h1>
+      <p class="text-zinc-600 dark:text-zinc-400 text-lg mb-4">{post.data.description}</p>
+      <time class="text-sm font-mono text-zinc-500 dark:text-zinc-400">
+        {formatDate(post.data.pubDate)} · {readingTime(post.body ?? '')} min čítania
+      </time>
+    </header>
+
+    <!-- Content -->
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>

@@ -1,0 +1,69 @@
+---
+export const prerender = true;
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { useTranslations } from '../../i18n/translations';
+
+const lang = 'en' as const;
+const t = useTranslations(lang);
+
+const experience = [
+  {
+    role: 'Senior Software Developer',
+    company: 'Acme Corp',
+    period: `2022 — present`,
+    desc: 'Development and maintenance of backend systems, code review, mentoring juniors.',
+  },
+  {
+    role: 'Software Developer',
+    company: 'StartupXYZ',
+    period: '2019 — 2022',
+    desc: 'Full-stack development of web applications in PHP and Vue.js.',
+  },
+];
+
+const skills = [
+  'PHP', 'Laravel', 'TypeScript', 'Vue.js', 'Astro',
+  'PostgreSQL', 'MySQL', 'Redis', 'Docker', 'Linux',
+  'Git', 'CI/CD', 'REST API',
+];
+---
+
+<BaseLayout title={t('cv.title')}>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+    <div class="mb-12">
+      <h1 class="text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">{t('cv.title')}</h1>
+      <p class="text-zinc-500 dark:text-zinc-400">Jozef Rebjak</p>
+    </div>
+
+    <section class="mb-12">
+      <h2 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-6 pb-2 border-b border-zinc-200 dark:border-zinc-800">
+        {t('cv.experience')}
+      </h2>
+      <div class="space-y-8">
+        {experience.map(({ role, company, period, desc }) => (
+          <div class="grid sm:grid-cols-[1fr_auto] gap-1 sm:gap-4">
+            <div>
+              <h3 class="font-semibold text-zinc-900 dark:text-zinc-100">{role}</h3>
+              <p class="text-[var(--color-brand)] dark:text-[var(--color-brand-dark)] text-sm font-medium">{company}</p>
+              <p class="text-zinc-600 dark:text-zinc-400 text-sm mt-2">{desc}</p>
+            </div>
+            <p class="text-sm text-zinc-500 dark:text-zinc-400 whitespace-nowrap sm:text-right">{period}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="mb-12">
+      <h2 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-6 pb-2 border-b border-zinc-200 dark:border-zinc-800">
+        {t('cv.skills')}
+      </h2>
+      <div class="flex flex-wrap gap-2">
+        {skills.map((skill) => (
+          <span class="px-3 py-1 rounded-full text-sm font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
+            {skill}
+          </span>
+        ))}
+      </div>
+    </section>
+  </div>
+</BaseLayout>

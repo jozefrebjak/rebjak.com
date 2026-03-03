@@ -1,0 +1,98 @@
+---
+import { useTranslations, getAlternatePath, type Lang } from '../i18n/translations';
+import ThemeToggle from './ThemeToggle.astro';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+const prefix = lang === 'en' ? '/en' : '';
+
+const navLinks = [
+  { href: `${prefix}/`, label: t('nav.home') },
+  { href: `${prefix}/cv`, label: t('nav.cv') },
+  { href: `${prefix}/portfolio`, label: t('nav.portfolio') },
+  { href: `${prefix}/blog`, label: t('nav.blog') },
+];
+
+const alternatePath = getAlternatePath(Astro.url, lang === 'sk' ? 'en' : 'sk');
+const currentPath = Astro.url.pathname;
+---
+
+<header class="sticky top-0 z-50 border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-sm">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+
+    <!-- Logo -->
+    <a
+      href={prefix || '/'}
+      class="font-semibold text-zinc-900 dark:text-zinc-100 hover:text-[var(--color-brand)] dark:hover:text-[var(--color-brand-dark)]"
+    >
+      rebjak<span class="text-[var(--color-brand)] dark:text-[var(--color-brand-dark)]">.com</span>
+    </a>
+
+    <!-- Nav + controls -->
+    <div class="flex items-center gap-1 sm:gap-2">
+      <nav class="hidden sm:flex items-center gap-1">
+        {navLinks.map(({ href, label }) => {
+          const isActive = currentPath === href || (href !== (prefix || '/') && currentPath.startsWith(href));
+          return (
+            <a
+              href={href}
+              class:list={[
+                'px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
+                isActive
+                  ? 'text-[var(--color-brand)] dark:text-[var(--color-brand-dark)] bg-blue-50 dark:bg-blue-950/30'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800/50'
+              ]}
+            >
+              {label}
+            </a>
+          );
+        })}
+      </nav>
+
+      <!-- Lang switch -->
+      <a
+        href={alternatePath}
+        class="px-3 py-1.5 rounded-md text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800/50 transition-colors"
+        title={t('lang.switch')}
+      >
+        {lang === 'sk' ? 'EN' : 'SK'}
+      </a>
+
+      <ThemeToggle />
+
+      <!-- Mobile nav toggle -->
+      <button
+        id="mobile-menu-toggle"
+        class="sm:hidden p-2 rounded-md text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+        aria-label="Menu"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <nav id="mobile-menu" class="sm:hidden hidden border-t border-zinc-200 dark:border-zinc-800 px-4 py-3 space-y-1">
+    {navLinks.map(({ href, label }) => (
+      <a
+        href={href}
+        class="block px-3 py-2 rounded-md text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+      >
+        {label}
+      </a>
+    ))}
+  </nav>
+</header>
+
+<script>
+  const toggle = document.getElementById('mobile-menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+  toggle?.addEventListener('click', () => menu?.classList.toggle('hidden'));
+</script>

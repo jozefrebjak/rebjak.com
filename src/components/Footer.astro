@@ -1,0 +1,40 @@
+---
+import { useTranslations, type Lang } from '../i18n/translations';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-zinc-200 dark:border-zinc-800 py-8 mt-16">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-zinc-500 dark:text-zinc-400">
+    <p>
+      © {year} Jozef Rebjak — {t('footer.rights')}
+    </p>
+    <p>
+      {t('footer.built')}
+      <a
+        href="https://astro.build"
+        class="text-zinc-700 dark:text-zinc-300 hover:text-[var(--color-brand)] dark:hover:text-[var(--color-brand-dark)] underline underline-offset-4"
+        target="_blank"
+        rel="noopener"
+      >
+        Astro
+      </a>
+      &amp;
+      <a
+        href="https://tailwindcss.com"
+        class="text-zinc-700 dark:text-zinc-300 hover:text-[var(--color-brand)] dark:hover:text-[var(--color-brand-dark)] underline underline-offset-4"
+        target="_blank"
+        rel="noopener"
+      >
+        Tailwind
+      </a>
+    </p>
+  </div>
+</footer>
