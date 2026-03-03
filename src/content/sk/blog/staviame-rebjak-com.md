@@ -13,6 +13,7 @@ Každý by mal mať vlastný kút na internete. Ja som ho roky odkladal. Dnes to
 Pracujem v oblasti NetDevOps — spravujem siete, servery, linuxovú infraštruktúru a píšem kód, ktorý to všetko drží pokope. Za tie roky som sa naučil veľa vecí, riešil zaujímavé problémy a nikdy som nemal miesto, kde by som si to všetko poriadne zapísal.
 
 Chcel som teda niečo vlastné:
+
 - **Blog** — kde môžem písať o sieťach, Linuxe, automatizácii a nástrojoch
 - **Portfólio** — projekty a veci, na ktorých pracujem
 - **CV** — digitálna verzia životopisu
@@ -72,6 +73,7 @@ Tailwind dostane triedu `dark` na element `<html>` skôr, ako sa čokoľvek vykr
 ## Deploy
 
 GitHub Actions pri každom pushu do vetvy `main`:
+
 1. `npm ci`
 2. `astro build` → statický výstup do `/dist`
 3. Deploy na GitHub Pages
@@ -81,6 +83,7 @@ Celý pipeline trvá zhruba 30 sekúnd.
 ## Čo ďalej?
 
 Toto je len základ. Plánujem pridať:
+
 - RSS feed
 - Sitemap a SEO metadáta
 - Reálny obsah CV a portfólia
