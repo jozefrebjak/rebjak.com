@@ -8,10 +8,16 @@ const t = useTranslations(lang);
 
 const experience = [
   {
-    role: 'NetDevOps Engineer',
-    company: '—',
-    period: 'present',
-    desc: 'Network infrastructure management, configuration automation, Linux server administration and writing tooling to streamline ops work.',
+    role: 'System Administrator & Developer',
+    company: 'ICT Solutions, s.r.o.',
+    period: '09/2019 — present',
+    desc: 'Linux server management, Docker Swarm and Proxmox cluster operations. Running and developing internal services: KEA DHCP, PowerDNS, full Prometheus monitoring stack (Prometheus, Alertmanager, Grafana). Internal tooling development and process automation. Ongoing involvement in network infrastructure management.',
+  },
+  {
+    role: 'Network Administrator',
+    company: 'GeCom, s.r.o.',
+    period: '09/2017 — 09/2019',
+    desc: 'Management and development of network infrastructure for a regional ISP. Configuration and monitoring of routers, switches and firewalls. Outage resolution and network optimization.',
   },
 ];
 
@@ -22,19 +28,23 @@ const skillGroups = [
   },
   {
     label: 'Linux',
-    skills: ['Debian', 'Ubuntu', 'RHEL', 'systemd', 'bash', 'cron', 'SSH', 'iptables'],
+    skills: ['Debian', 'Ubuntu', 'RHEL', 'systemd', 'bash', 'cron', 'SSH', 'iptables', 'nftables'],
   },
   {
-    label: 'Automation',
-    skills: ['Ansible', 'Python', 'Bash scripting', 'Git', 'CI/CD', 'Docker'],
+    label: 'Infrastructure',
+    skills: ['Proxmox', 'Docker Swarm', 'KVM', 'LXC'],
   },
   {
-    label: 'Code',
-    skills: ['Python', 'TypeScript', 'PHP', 'REST API', 'Astro', 'Tailwind'],
+    label: 'Services',
+    skills: ['KEA DHCP', 'PowerDNS', 'Nginx', 'HAProxy'],
   },
   {
     label: 'Monitoring',
-    skills: ['Zabbix', 'Grafana', 'Prometheus', 'syslog', 'SNMP'],
+    skills: ['Prometheus', 'Alertmanager', 'Grafana', 'Loki', 'SNMP', 'syslog'],
+  },
+  {
+    label: 'Automation & code',
+    skills: ['Ansible', 'Python', 'Bash', 'Git', 'CI/CD', 'TypeScript', 'PHP'],
   },
 ];
 ---
@@ -51,10 +61,11 @@ const skillGroups = [
         {t('cv.experience')}
       </h2>
       <div class="space-y-8">
-        {experience.map(({ role, period, desc }) => (
+        {experience.map(({ role, company, period, desc }) => (
           <div class="grid sm:grid-cols-[1fr_auto] gap-1 sm:gap-4">
             <div>
               <h3 class="font-semibold text-zinc-900 dark:text-zinc-100">{role}</h3>
+              <p class="text-[var(--color-brand)] dark:text-[var(--color-brand-dark)] text-sm font-medium">{company}</p>
               <p class="text-zinc-600 dark:text-zinc-400 text-sm mt-2">{desc}</p>
             </div>
             <p class="text-sm text-zinc-500 dark:text-zinc-400 whitespace-nowrap sm:text-right">{period}</p>

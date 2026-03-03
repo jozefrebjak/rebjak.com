@@ -1,6 +1,6 @@
 ---
-title: 'Stavíame rebjak.com od nuly'
-description: 'Prečo som sa rozhodol postaviť vlastný web, čo som vybral za stack a ako celý proces prebiehal. Building in public, prvý diel.'
+title: 'Stavíme rebjak.com od nuly'
+description: 'Prečo som sa rozhodol postaviť vlastný web, aký stack som zvolil a ako celý proces prebiehal. Building in public, prvý diel.'
 pubDate: 2026-03-03
 tags: ['astro', 'tailwind', 'webdev', 'building-in-public']
 lang: sk
@@ -8,27 +8,27 @@ lang: sk
 
 Každý by mal mať vlastný kút na internete. Ja som ho roky odkladal. Dnes to meníme.
 
-## Prečo teraz?
+## Prečo práve teraz?
 
-Pracujem v oblasti NetDevOps — správam siete, servery, Linux infraštruktúru a píšem kód, ktorý to celé drží pokope. Za tie roky som sa naučil kopec vecí, riešil zaujímavé problémy a nenašiel som nikde miesto, kde by som si to všetko poriadne zapísal.
+Pracujem v oblasti NetDevOps — spravujem siete, servery, linuxovú infraštruktúru a píšem kód, ktorý to všetko drží pokope. Za tie roky som sa naučil veľa vecí, riešil zaujímavé problémy a nikdy som nemal miesto, kde by som si to všetko poriadne zapísal.
 
 Chcel som teda niečo vlastné:
 - **Blog** — kde môžem písať o sieťach, Linuxe, automatizácii a nástrojoch
 - **Portfólio** — projekty a veci, na ktorých pracujem
 - **CV** — digitálna verzia životopisu
-- **Dvojjazyčnosť** — SK a EN, pre istotu aj pre zahraničné príležitosti
+- **Dvojjazyčnosť** — SK a EN, pre prípadné zahraničné príležitosti
 - **Dark mode** — samozrejmosť
 
 ## Prečo Astro?
 
-Skúmal som možnosti. WordPress — nie. Next.js — výkonný, ale overkill pre statický web. Hotová šablóna — nie, chcel som niečo vlastné.
+Skúmal som možnosti. WordPress — nie. Next.js — výkonný, ale zbytočne komplexný pre statický web. Hotová šablóna — nie, chcel som niečo vlastné.
 
 **Astro** vyhralo z niekoľkých dôvodov:
 
-- **Zero JS by default** — statická HTML, JavaScript len tam kde treba. Pre blog s dark mode togglem a jazykovým prepínačom ideálne.
-- **Content Collections** — type-safe správa markdown súborov priamo v repe
+- **Zero JS by default** — statické HTML, JavaScript len tam, kde je skutočne potrebný. Pre blog s prepínačom témy a jazykovým prepínačom je to ideálne.
+- **Content Collections** — type-safe správa markdown súborov priamo v repozitári
 - **Natívne i18n routing** — SK/EN bez externých knižníc
-- **GitHub Pages deploy** — zadarmo, jednoducho, bez serverov
+- **GitHub Pages** — bezplatný hosting, jednoduché nastavenie, žiadne servery
 
 Stack je zámerne jednoduchý:
 
@@ -38,7 +38,7 @@ Tailwind CSS v4
 GitHub Pages + GitHub Actions
 ```
 
-Žiadny headless CMS, žiadny state management. Obsah sú markdown súbory priamo v repe — verzionovateľné, prenosné, jednoduché.
+Žiadny headless CMS, žiadna správa stavu. Obsah sú markdown súbory priamo v repozitári — verziovateľné, prenosné, jednoduché.
 
 ## Štruktúra
 
@@ -49,13 +49,13 @@ GitHub Pages + GitHub Actions
 /blog      → tento blog
 ```
 
-Každá sekcia existuje v SK aj EN variante — SK je default (bez prefixu), EN je na `/en`.
+Každá sekcia existuje v SK aj EN variante — SK je predvolená (bez prefixu), EN je na `/en`.
 
-## Dark mode bez flashu
+## Dark mode bez bliknutia
 
-Klasický problém: ak dark mode riešiš cez CSS alebo JS hydráciu, pri načítaní stránky preblikne svetlý mód.
+Klasický problém: ak riešite dark mode cez CSS alebo hydráciu v JavaScripte, pri načítaní stránky na chvíľu preblikne svetlý režim.
 
-Riešenie je inline `<script>` v `<head>`, ktorý beží ešte pred renderom:
+Riešením je inline `<script>` v `<head>`, ktorý sa spustí ešte pred vykreslením:
 
 ```js
 (function () {
@@ -67,22 +67,22 @@ Riešenie je inline `<script>` v `<head>`, ktorý beží ešte pred renderom:
 })();
 ```
 
-Tailwind dostane `dark` class na `<html>` skôr ako sa čokoľvek vykreslí. Žiadny flash.
+Tailwind dostane triedu `dark` na element `<html>` skôr, ako sa čokoľvek vykreslí. Žiadne bliknutie.
 
 ## Deploy
 
-GitHub Actions pri každom push do `main`:
+GitHub Actions pri každom pushu do vetvy `main`:
 1. `npm ci`
-2. `astro build` → statický output do `/dist`
+2. `astro build` → statický výstup do `/dist`
 3. Deploy na GitHub Pages
 
-Celý pipeline trvá ~30 sekúnd.
+Celý pipeline trvá zhruba 30 sekúnd.
 
 ## Čo ďalej?
 
-Toto je len základ. Plánujem:
+Toto je len základ. Plánujem pridať:
 - RSS feed
-- Sitemap a SEO
+- Sitemap a SEO metadáta
 - Reálny obsah CV a portfólia
 - Články o sieťach, Linuxe a automatizácii
 
@@ -90,4 +90,4 @@ Toto je len základ. Plánujem:
 
 ---
 
-*Zdrojový kód je na [GitHub](https://github.com/jozefrebjak/rebjak.com).*
+*Zdrojový kód je dostupný na [GitHub](https://github.com/jozefrebjak/rebjak.com).*
