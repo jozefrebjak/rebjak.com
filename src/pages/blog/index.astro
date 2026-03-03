@@ -42,7 +42,7 @@ function formatDate(date: Date, locale: string): string {
     ) : (
       <div class="space-y-8">
         {posts.map((post) => {
-          const slug = lang === 'en' ? `/en/blog/${post.id}` : `/blog/${post.id}`;
+          const slug = lang === 'en' ? `/en/blog/${post.id.replace(/\.md$/, '')}` : `/blog/${post.id.replace(/\.md$/, '')}`;
           const mins = readingTime(post.body ?? '');
           return (
             <article class="group">

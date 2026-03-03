@@ -6,7 +6,7 @@ import { getLangFromUrl } from '../../i18n/translations';
 export async function getStaticPaths() {
   const posts = await getCollection('blog', ({ data }) => !data.draft && data.lang === 'sk');
   return posts.map((post) => ({
-    params: { slug: post.id },
+    params: { slug: post.id.replace(/\.md$/, '') },
     props: { post },
   }));
 }

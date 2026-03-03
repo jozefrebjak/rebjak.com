@@ -41,7 +41,7 @@ function formatDate(date: Date): string {
           const mins = readingTime(post.body ?? '');
           return (
             <article class="group">
-              <a href={`/en/blog/${post.id}`} class="block">
+              <a href={`/en/blog/${post.id.replace(/\.md$/, '')}`} class="block">
                 <time class="text-xs font-mono text-zinc-500 dark:text-zinc-400">
                   {formatDate(post.data.pubDate)} · {mins} {t('blog.minutes')}
                 </time>
