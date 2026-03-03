@@ -13,6 +13,7 @@ Everyone should have their own corner of the internet. I kept putting it off for
 I work in NetDevOps — managing networks, servers, Linux infrastructure and writing code that holds it all together. Over the years I've learned a lot, solved interesting problems and never had a proper place to write any of it down.
 
 So I wanted something of my own:
+
 - **Blog** — to write about networks, Linux, automation and tools
 - **Portfolio** — projects and things I'm working on
 - **CV** — a digital version of my resume
@@ -28,7 +29,7 @@ I looked at the options. WordPress — no. Next.js — powerful, but overkill fo
 - **Zero JS by default** — static HTML, JavaScript only where needed. Ideal for a blog with a dark mode toggle and language switcher.
 - **Content Collections** — type-safe markdown file management directly in the repo
 - **Native i18n routing** — SK/EN without external packages
-- **GitHub Pages deploy** — free, simple, no servers
+- **GitHub Pages** — free hosting, simple setup, no servers
 
 The stack is intentionally minimal:
 
@@ -72,6 +73,7 @@ Tailwind gets the `dark` class on `<html>` before anything renders. No flash.
 ## Deploy
 
 GitHub Actions on every push to `main`:
+
 1. `npm ci`
 2. `astro build` → static output to `/dist`
 3. Deploy to GitHub Pages
@@ -81,8 +83,9 @@ The whole pipeline takes ~30 seconds.
 ## What's next?
 
 This is just the foundation. I'm planning:
+
 - RSS feed
-- Sitemap and SEO
+- Sitemap and SEO metadata
 - Real CV and portfolio content
 - Articles about networks, Linux and automation
 
