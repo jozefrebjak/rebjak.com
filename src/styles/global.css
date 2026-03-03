@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Primary brand — cyan */
+  --color-brand:      oklch(0.62 0.20 220);
+  --color-brand-dark: oklch(0.72 0.18 220);
+
+  /* Accent colours matching canvas palette */
+  --color-violet:      oklch(0.55 0.22 290);
+  --color-violet-dark: oklch(0.68 0.20 290);
+  --color-emerald:      oklch(0.60 0.18 165);
+  --color-emerald-dark: oklch(0.72 0.16 165);
+}
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+  }
+
+  html {
+    @apply antialiased scroll-smooth;
+  }
+
+  body {
+    /* light: very clean off-white; dark: near-black with slight blue tint */
+    @apply bg-[#f8f9fb] text-zinc-900 dark:bg-[#080c12] dark:text-zinc-100;
+    @apply transition-colors duration-200;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+
+  a {
+    @apply transition-colors duration-150;
+  }
+
+  /* ── Blog prose ─────────────────────────────── */
+  .prose {
+    @apply text-zinc-700 dark:text-zinc-300 max-w-none;
+  }
+
+  .prose h1, .prose h2, .prose h3 {
+    @apply text-zinc-900 dark:text-zinc-100 font-semibold;
+  }
+
+  .prose h2 { @apply text-2xl mt-10 mb-4; }
+  .prose h3 { @apply text-xl mt-8 mb-3; }
+  .prose p  { @apply leading-7 mb-5; }
+
+  .prose a {
+    @apply text-[var(--color-brand)] dark:text-[var(--color-brand-dark)] underline underline-offset-4;
+  }
+
+  .prose code {
+    @apply font-mono text-sm bg-zinc-100 dark:bg-zinc-800/80 rounded px-1.5 py-0.5
+           text-[var(--color-brand)] dark:text-[var(--color-brand-dark)];
+  }
+
+  .prose pre {
+    @apply bg-zinc-900 dark:bg-[#0d1117] rounded-xl p-5 overflow-x-auto my-6
+           border border-zinc-800/60;
+  }
+
+  .prose pre code {
+    @apply bg-transparent p-0 text-zinc-100 text-[var(--color-brand)];
+    color: inherit;
+  }
+
+  .prose ul  { @apply list-disc pl-5 mb-5 space-y-1.5; }
+  .prose ol  { @apply list-decimal pl-5 mb-5 space-y-1.5; }
+
+  .prose blockquote {
+    @apply border-l-2 border-[var(--color-brand)] pl-4 italic
+           text-zinc-500 dark:text-zinc-400 my-6;
+  }
+
+  .prose hr {
+    @apply border-zinc-200 dark:border-zinc-800 my-8;
+  }
+
+  /* ── Utility: gradient text ─────────────────── */
+  .grad-text {
+    @apply text-transparent bg-clip-text;
+    background-image: linear-gradient(135deg, var(--color-brand-dark), var(--color-violet-dark));
+  }
+
+  /* ── Glassmorphism card ─────────────────────── */
+  .glass {
+    @apply bg-white/70 dark:bg-white/[0.03]
+           border border-zinc-200/80 dark:border-white/[0.06]
+           backdrop-blur-sm;
+  }
+}

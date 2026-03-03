@@ -1,0 +1,246 @@
+---
+import "../styles/global.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { getLangFromUrl, useTranslations } from "../i18n/translations";
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+  alternatePath?: string;
+}
+
+const {
+  title,
+  description = "Jozef Rebjak — developer, builder.",
+  ogImage,
+  alternatePath,
+} = Astro.props;
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{title} — rebjak.com</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={`${title} — rebjak.com`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:type" content="website" />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Dark mode: prevent flash -->
+    <script is:inline>
+      (function () {
+        const stored = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)",
+        ).matches;
+        if (stored === "dark" || (!stored && prefersDark)) {
+          document.documentElement.classList.add("dark");
+        }
+      })();
+    </script>
+  </head>
+  <body class="min-h-screen flex flex-col">
+    <canvas id="bg-canvas" class="fixed inset-0 -z-10 pointer-events-none"
+    ></canvas>
+    <Header lang={lang} alternatePath={alternatePath} />
+    <main class="flex-1">
+      <slot />
+    </main>
+    <Footer lang={lang} />
+
+    <script is:inline>
+      (function () {
+        const canvas = document.getElementById("bg-canvas");
+        const ctx = canvas.getContext("2d");
+
+        let mouse = { x: -9999, y: -9999 };
+        let particles = [];
+        let W, H;
+
+        const COUNT = 90;
+        const CONNECT_DIST = 150;
+        const MOUSE_DIST = 200;
+
+        // colour palette — cyan anchor + violet accent + subtle green
+        // each particle gets assigned one of these hues
+        const PALETTE_DARK = ["41,182,246", "139,92,246", "34,211,163"];
+        const PALETTE_LIGHT = ["6,120,180", "100,50,200", "10,155,115"];
+
+        function isDark() {
+          return document.documentElement.classList.contains("dark");
+        }
+
+        function rand(min, max) {
+          return Math.random() * (max - min) + min;
+        }
+
+        function resize() {
+          W = canvas.width = window.innerWidth;
+          H = canvas.height = window.innerHeight;
+          particles = [];
+          for (let i = 0; i < COUNT; i++) {
+            particles.push({
+              x: rand(0, W),
+              y: rand(0, H),
+              vx: rand(-0.22, 0.22),
+              vy: rand(-0.22, 0.22),
+              // depth 0..1 — smaller/dimmer = further away
+              depth: rand(0.2, 1.0),
+              colorIdx: Math.floor(Math.random() * 3),
+            });
+          }
+        }
+
+        function tick() {
+          ctx.clearRect(0, 0, W, H);
+          const dark = isDark();
+          const palette = dark ? PALETTE_DARK : PALETTE_LIGHT;
+
+          for (const p of particles) {
+            p.x += p.vx * p.depth;
+            p.y += p.vy * p.depth;
+            if (p.x < 0) p.x = W;
+            if (p.x > W) p.x = 0;
+            if (p.y < 0) p.y = H;
+            if (p.y > H) p.y = 0;
+          }
+
+          // edges between particles
+          for (let i = 0; i < particles.length; i++) {
+            const a = particles[i];
+            const ca = palette[a.colorIdx];
+            for (let j = i + 1; j < particles.length; j++) {
+              const b = particles[j];
+              const dx = a.x - b.x;
+              const dy = a.y - b.y;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+              if (dist > CONNECT_DIST) continue;
+
+              const proximity = 1 - dist / CONNECT_DIST;
+              const depthFade = (a.depth + b.depth) / 2;
+              const baseAlpha = dark ? 0.1 : 0.45;
+              const alpha = proximity * depthFade * baseAlpha;
+
+              // gradient line: colour of A → colour of B
+              const cb2 = palette[b.colorIdx];
+              if (ca === cb2) {
+                ctx.strokeStyle = `rgba(${ca},${alpha})`;
+              } else {
+                const grad = ctx.createLinearGradient(a.x, a.y, b.x, b.y);
+                grad.addColorStop(0, `rgba(${ca},${alpha})`);
+                grad.addColorStop(1, `rgba(${cb2},${alpha})`);
+                ctx.strokeStyle = grad;
+              }
+              ctx.lineWidth = 0.6 + proximity * 0.6;
+              ctx.beginPath();
+              ctx.moveTo(a.x, a.y);
+              ctx.lineTo(b.x, b.y);
+              ctx.stroke();
+            }
+
+            // mouse connections — brightest colour of the particle
+            const mdx = a.x - mouse.x;
+            const mdy = a.y - mouse.y;
+            const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
+            if (mdist < MOUSE_DIST) {
+              const t = 1 - mdist / MOUSE_DIST;
+              const mAlpha = t * a.depth * (dark ? 0.6 : 1.0);
+              const grad = ctx.createLinearGradient(a.x, a.y, mouse.x, mouse.y);
+              grad.addColorStop(0, `rgba(${ca},${mAlpha})`);
+              grad.addColorStop(1, `rgba(${ca},0)`);
+              ctx.strokeStyle = grad;
+              ctx.lineWidth = 0.8 + t * 0.8;
+              ctx.beginPath();
+              ctx.moveTo(a.x, a.y);
+              ctx.lineTo(mouse.x, mouse.y);
+              ctx.stroke();
+            }
+          }
+
+          // dots
+          for (const p of particles) {
+            const col = palette[p.colorIdx];
+            const mdx = p.x - mouse.x;
+            const mdy = p.y - mouse.y;
+            const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
+            const near = mdist < MOUSE_DIST;
+            const mt = near ? 1 - mdist / MOUSE_DIST : 0;
+
+            const baseA = dark ? 0.18 : 0.55;
+            const alpha = (baseA + mt * 0.75) * p.depth;
+            const radius = 1.2 + p.depth * 1.2 + mt * 2;
+
+            // glow on hover
+            if (mt > 0.1) {
+              const glow = ctx.createRadialGradient(
+                p.x,
+                p.y,
+                0,
+                p.x,
+                p.y,
+                radius * 4,
+              );
+              glow.addColorStop(
+                0,
+                `rgba(${col},${mt * (dark ? 0.35 : 0.6) * p.depth})`,
+              );
+              glow.addColorStop(1, `rgba(${col},0)`);
+              ctx.fillStyle = glow;
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, radius * 4, 0, Math.PI * 2);
+              ctx.fill();
+            }
+
+            ctx.fillStyle = `rgba(${col},${alpha})`;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          requestAnimationFrame(tick);
+        }
+
+        window.addEventListener("mousemove", (ev) => {
+          mouse.x = ev.clientX;
+          mouse.y = ev.clientY;
+        });
+        window.addEventListener("mouseleave", () => {
+          mouse.x = -9999;
+          mouse.y = -9999;
+        });
+        window.addEventListener("resize", resize);
+
+        resize();
+        tick();
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,427 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { useTranslations, getLangFromUrl } from '../i18n/translations';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const cvHref        = lang === 'en' ? '/en/cv'        : '/cv';
+const portfolioHref = lang === 'en' ? '/en/portfolio' : '/portfolio';
+const blogHref      = lang === 'en' ? '/en/blog'      : '/blog';
+
+const isSk = lang === 'sk';
+---
+
+<BaseLayout title="Jozef Rebjak" description={t('hero.tagline')}>
+
+  <!-- ── HERO ─────────────────────────────────────────────── -->
+  <section class="relative max-w-4xl mx-auto px-4 sm:px-6 pt-20 pb-8 sm:pt-32 sm:pb-20">
+
+    <!-- desktop: side by side | mobile: stacked centered -->
+    <div class="flex flex-col lg:flex-row lg:items-center gap-10 lg:gap-12">
+
+      <!-- LEFT: text -->
+      <div class="flex-shrink-0 lg:max-w-[420px] text-center sm:text-left">
+        <div class="inline-flex items-center gap-2 font-mono text-xs mb-4 sm:mb-6 px-3 py-1.5 rounded-full glass text-zinc-500 dark:text-zinc-400">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+          {isSk ? 'momentálne zaneprázdnený' : 'currently unavailable'}
+        </div>
+
+        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-bold leading-[1.08] tracking-tight mb-6 sm:mb-5">
+          <span class="text-zinc-800 dark:text-zinc-100">{t('hero.greeting')}</span>
+          <br />
+          <span class="text-transparent bg-clip-text" style="background-image: linear-gradient(135deg, var(--color-brand-dark) 0%, var(--color-violet-dark) 60%, var(--color-emerald-dark) 100%);">
+            Jozef Rebjak.
+          </span>
+        </h1>
+
+        <p class="text-sm sm:text-lg font-medium text-zinc-500 dark:text-zinc-400 mb-2 sm:mb-3 font-mono">
+          <span class="block sm:inline">{isSk ? 'DevOps inžinier.' : 'DevOps engineer.'}</span>
+          <span class="block sm:inline">{isSk ? 'Servery, automatizácia, kód.' : 'Servers, automation, code.'}</span>
+        </p>
+
+        <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-500 leading-relaxed mb-4 sm:mb-8 max-w-md mx-auto sm:mx-0">
+          {isSk
+            ? 'Začínal som so sieťami — dnes píšem kód a automatizujem všetko, čo sa dá, od infraštruktúry po nasadenie. Linux, Docker, PHP, CI/CD.'
+            : "Started on networks, now I write code and automate everything I can — from network to deploy. Linux, Docker, PHP, CI/CD."}
+        </p>
+
+        <div class="flex flex-wrap justify-center sm:justify-start gap-3">
+          <a href={cvHref}
+            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:-translate-y-0.5 text-white shadow-lg shadow-cyan-900/20"
+            style="background-image: linear-gradient(135deg, var(--color-brand), var(--color-violet-dark));">
+            {t('hero.cta.cv')}
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </a>
+          <a href={blogHref}
+            class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all hover:-translate-y-0.5 glass text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100">
+            {t('hero.cta.blog')}
+          </a>
+        </div>
+      </div>
+
+      <!-- RIGHT: terminal -->
+      <div class="flex-1 min-w-0" id="term-wrap" style="perspective: 900px; cursor: grab;">
+        <div id="term-3d" class="glass rounded-xl overflow-hidden text-xs font-mono leading-relaxed shadow-xl shadow-black/10 dark:shadow-black/40"
+          style="transform-style: preserve-3d; transition: transform 0.15s ease;">
+          <!-- title bar -->
+          <div class="flex items-center gap-1.5 px-4 py-2.5 border-b border-zinc-200/60 dark:border-white/[0.06] bg-zinc-100/60 dark:bg-white/[0.04]">
+            <span class="w-2 h-2 rounded-full bg-red-400/80 cursor-pointer hover:brightness-110 transition-all" title="Close"></span>
+            <span class="w-2 h-2 rounded-full bg-amber-400/80" title="Minimize"></span>
+            <span class="w-2 h-2 rounded-full bg-green-400/80 cursor-pointer hover:brightness-125 transition-all" title="Maximize"></span>
+            <span class="ml-2 text-zinc-400 dark:text-zinc-600 text-[10px]">jrebjak@core-01 ~</span>
+          </div>
+          <!-- output — shorter on mobile -->
+          <div id="term-output" class="p-4 space-y-0.5 h-[150px] sm:h-[240px] overflow-y-auto scrollbar-thin"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── STATS ─────────────────────────────────────────────── -->
+  <section class="max-w-4xl mx-auto px-4 sm:px-6 pb-6 sm:pb-10">
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-px glass rounded-xl overflow-hidden">
+      {[
+        { value: '8+',   label: isSk ? 'rokov v IT'     : 'years in IT'   },
+        { value: '2017', label: isSk ? 'prvá sieť'      : 'first network' },
+        { value: '100+', label: isSk ? 'Linux serverov' : 'Linux servers' },
+        { value: '∞',    label: isSk ? 'kávičiek'       : 'coffees'       },
+      ].map(({ value, label }) => (
+        <div class="flex flex-col gap-1 px-6 py-5 bg-[#f8f9fb]/50 dark:bg-[#080c12]/60">
+          <span class="text-3xl font-bold font-mono text-transparent bg-clip-text"
+            style="background-image: linear-gradient(135deg, var(--color-brand-dark), var(--color-violet-dark));">
+            {value}
+          </span>
+          <span class="text-xs font-mono text-zinc-400 dark:text-zinc-600">{label}</span>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- ── NAV CARDS ─────────────────────────────────────────── -->
+  <section class="max-w-4xl mx-auto px-4 sm:px-6 pb-16 sm:pb-20">
+    <p class="text-xs font-mono text-zinc-400 dark:text-zinc-600 uppercase tracking-widest mb-4">
+      {isSk ? '— čo tu nájdeš' : "— what you'll find here"}
+    </p>
+    <div class="grid sm:grid-cols-3 gap-3">
+      {[
+        {
+          href: cvHref,
+          label: 'cv',
+          title: isSk ? 'Skúsenosti & zručnosti' : 'Experience & skills',
+          desc:  isSk ? 'Od sieťového technika cez ISP admina po systémového admina a vývojára.' : 'From network tech to ISP admin, sysadmin and developer.',
+          dot: 'bg-[var(--color-brand-dark)]',
+        },
+        {
+          href: portfolioHref,
+          label: 'portfolio',
+          title: isSk ? 'Projekty & nástroje' : 'Projects & tools',
+          desc:  isSk ? 'Veci, ktoré som postavil, automatizoval alebo opravil.' : 'Things I built, automated or fixed.',
+          dot: 'bg-[var(--color-violet-dark)]',
+        },
+        {
+          href: blogHref,
+          label: 'blog',
+          title: isSk ? 'Siete, Linux, kód' : 'Networks, Linux, code',
+          desc:  isSk ? 'Poznámky z praxe. Čo som riešil, čo som sa naučil.' : 'Notes from the field. What I solved, what I learned.',
+          dot: 'bg-[var(--color-emerald-dark)]',
+        },
+      ].map(({ href, label, title, desc, dot }) => (
+        <a href={href}
+          class="group flex flex-col p-5 rounded-xl glass hover:bg-white/90 dark:hover:bg-white/[0.06] transition-all hover:-translate-y-0.5">
+          <div class="flex items-center gap-2 mb-3">
+            <span class={`w-1.5 h-1.5 rounded-full ${dot}`}></span>
+            <span class="text-xs font-mono text-zinc-400 dark:text-zinc-600">{label}://</span>
+          </div>
+          <span class="font-semibold text-zinc-900 dark:text-zinc-100 mb-1.5 transition-colors group-hover:text-[var(--color-brand)]  dark:group-hover:text-[var(--color-brand-dark)]">
+            {title}
+          </span>
+          <span class="text-sm text-zinc-500 dark:text-zinc-500 leading-relaxed flex-1">{desc}</span>
+          <span class="mt-4 text-xs font-mono text-zinc-300 dark:text-zinc-700 group-hover:text-[var(--color-brand-dark)] transition-colors">
+            {isSk ? 'otvoriť →' : 'open →'}
+          </span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+</BaseLayout>
+
+<style>
+  h1  { animation: fadeUp 0.7s cubic-bezier(.16,1,.3,1) both; }
+  #term-3d { will-change: transform; }
+  #term-output { scrollbar-width: thin; scrollbar-color: rgba(100,116,139,0.3) transparent; }
+  #term-output::-webkit-scrollbar { width: 4px; }
+  #term-output::-webkit-scrollbar-track { background: transparent; }
+  #term-output::-webkit-scrollbar-thumb { background: rgba(100,116,139,0.3); border-radius: 2px; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .term-prompt { color: #29b6f6; }
+  .term-cmd    { color: #e2e8f0; }
+  .term-out    { color: #64748b; }
+  .term-ok     { color: #34d39a; }
+  .term-warn   { color: #fbbf24; }
+  .term-hi     { color: #a78bfa; }
+  :root:not(.dark) .term-cmd  { color: #1e293b; }
+  :root:not(.dark) .term-out  { color: #64748b; }
+  :root:not(.dark) .term-ok   { color: #059669; }
+  :root:not(.dark) .term-warn { color: #d97706; }
+  :root:not(.dark) .term-hi   { color: #7c3aed; }
+  .cursor {
+    display: inline-block;
+    width: 7px; height: 13px;
+    background: #29b6f6;
+    vertical-align: middle;
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+</style>
+
+<script>
+  const out = document.getElementById('term-output');
+  if (out) {
+    // starship-style prompt line
+    function prompt(dir: string, branch: string, dur?: string, exitOk = true) {
+      const dirPart   = `<span style="color:#29b6f6;font-weight:600"> ${dir}</span>`;
+      const gitPart   = `<span style="color:#a78bfa"> <span style="opacity:.6"></span> ${branch}</span>`;
+      const durPart   = dur ? `<span style="color:#64748b"> ${dur}</span>` : '';
+      const arrow     = exitOk
+        ? `<span style="color:#34d39a">❯</span>`
+        : `<span style="color:#f87171">❯</span>`;
+      return `<div>${dirPart}${gitPart}${durPart}</div><div>${arrow} `;
+    }
+
+    const lines = [
+      { delay: 150,  type: 'prompt', dir: '~/infra',  branch: 'main' },
+      { delay: 160,  type: 'cmd',    text: 'uptime</div>' },
+      { delay: 620,  type: 'out',    text: ' up <span style="color:#34d39a">312d 4h</span>  load: <span style="color:#34d39a">0.12</span>' },
+
+      { delay: 1050, type: 'prompt', dir: '~/infra',  branch: 'main', dur: '0.4s' },
+      { delay: 1060, type: 'cmd',    text: 'docker ps --format "table {{.Names}}\\t{{.Status}}</div>' },
+      { delay: 1500, type: 'out',    text: '<span style="color:#34d39a">●</span> powerdns      Up 12 days' },
+      { delay: 1620, type: 'out',    text: '<span style="color:#34d39a">●</span> kea-dhcp4     Up 12 days' },
+      { delay: 1740, type: 'out',    text: '<span style="color:#34d39a">●</span> prometheus    Up 12 days' },
+      { delay: 1860, type: 'out',    text: '<span style="color:#34d39a">●</span> grafana       Up 12 days' },
+      { delay: 1980, type: 'out',    text: '<span style="color:#34d39a">●</span> alertmanager  Up 12 days' },
+
+      { delay: 2350, type: 'prompt', dir: '~/ansible', branch: 'main', dur: '1.2s' },
+      { delay: 2360, type: 'cmd',    text: 'ansible-playbook site.yml --diff</div>' },
+      { delay: 2800, type: 'out',    text: 'PLAY [all] ····························' },
+      { delay: 2980, type: 'out',    text: 'TASK [deploy : sync config]  <span style="color:#34d39a">ok=9</span>  <span style="color:#a78bfa">changed=2</span>  failed=<span style="color:#34d39a">0</span>' },
+
+      { delay: 3400, type: 'prompt', dir: '~/ansible', branch: 'main', dur: '8.3s' },
+      { delay: 3410, type: 'cmd',    text: 'ping -c 2 8.8.8.8</div>' },
+      { delay: 3820, type: 'out',    text: 'rtt min/avg/max = <span style="color:#34d39a">3.9/4.1/4.3 ms</span>' },
+
+      { delay: 4300, type: 'prompt', dir: '~/ansible', branch: 'main', dur: '0.3s' },
+      { delay: 4310, type: 'cmd',    text: '<span class="cursor"></span></div>' },
+    ];
+
+    function addLine(html: string) {
+      const div = document.createElement('div');
+      div.innerHTML = html;
+      out!.appendChild(div);
+      out!.scrollTop = out!.scrollHeight;
+    }
+
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor';
+    out.appendChild(cursor);
+
+    lines.forEach((line) => {
+      const { delay, type } = line;
+      const text   = 'text'   in line ? line.text   : undefined;
+      const dir    = 'dir'    in line ? line.dir    : undefined;
+      const branch = 'branch' in line ? line.branch : undefined;
+      const dur    = 'dur'    in line ? line.dur    : undefined;
+      setTimeout(() => {
+        cursor.remove();
+        if (type === 'prompt') {
+          addLine(prompt(dir!, branch!, dur, true));
+        } else if (type === 'cmd') {
+          // appended inline after prompt — find last div and append
+          const last = out!.lastElementChild;
+          if (last) last.innerHTML += `<span class="term-cmd">${text}</span>`;
+        } else {
+          addLine(`<div class="term-out pl-2">${text}</div>`);
+        }
+        if (type !== 'cmd' || !text?.includes('cursor')) out!.appendChild(cursor);
+      }, delay);
+    });
+  }
+
+  // ── 3D tilt + drag + maximize on terminal ──
+  const wrap   = document.getElementById('term-wrap');
+  const term3d = document.getElementById('term-3d') as HTMLElement | null;
+  const termOutput = document.getElementById('term-output') as HTMLElement | null;
+
+  if (wrap && term3d) {
+    const isMobile = window.innerWidth < 640;
+    const BASE_Y = isMobile ? 0 : -8;
+    const BASE_X = isMobile ? 0 : 4;
+    if (!isMobile) {
+      term3d.style.transform = `rotateY(${BASE_Y}deg) rotateX(${BASE_X}deg)`;
+    }
+    let curRY = BASE_Y, curRX = BASE_X;
+    let isDragging = false;
+    let dragStartX = 0, dragStartY = 0;
+    let dragStartRY = BASE_Y, dragStartRX = BASE_X;
+    let isMaximized = false;
+    let rafId = 0;
+
+    function applyTransform(ry: number, rx: number, scale = 1) {
+      term3d!.style.transform = `rotateY(${ry}deg) rotateX(${rx}deg) scale(${scale})`;
+    }
+
+    function animateTo(targetRY: number, targetRX: number, duration = 400) {
+      const startRY = curRY, startRX = curRX;
+      const t0 = performance.now();
+      cancelAnimationFrame(rafId);
+      function step(now: number) {
+        const p = Math.min((now - t0) / duration, 1);
+        const ease = 1 - Math.pow(1 - p, 3); // cubic ease-out
+        curRY = startRY + (targetRY - startRY) * ease;
+        curRX = startRX + (targetRX - startRX) * ease;
+        applyTransform(curRY, curRX);
+        if (p < 1) rafId = requestAnimationFrame(step);
+      }
+      rafId = requestAnimationFrame(step);
+    }
+
+    // hover tilt (only when not dragging and not maximized)
+    wrap.addEventListener('mousemove', (e) => {
+      if (isDragging || isMaximized) return;
+      const r = wrap.getBoundingClientRect();
+      const nx = (e.clientX - r.left) / r.width  - 0.5;
+      const ny = (e.clientY - r.top)  / r.height - 0.5;
+      curRY = BASE_Y + nx * 18;
+      curRX = BASE_X - ny * 10;
+      cancelAnimationFrame(rafId);
+      applyTransform(curRY, curRX, 1.015);
+    });
+    wrap.addEventListener('mouseleave', () => {
+      if (isDragging || isMaximized) return;
+      animateTo(BASE_Y, BASE_X);
+    });
+
+    // drag-to-rotate
+    wrap.addEventListener('mousedown', (e) => {
+      if (isMaximized) return;
+      isDragging = true;
+      dragStartX  = e.clientX;
+      dragStartY  = e.clientY;
+      dragStartRY = curRY;
+      dragStartRX = curRX;
+      term3d!.style.transition = 'none';
+      wrap.style.cursor = 'grabbing';
+      e.preventDefault();
+    });
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const dx = e.clientX - dragStartX;
+      const dy = e.clientY - dragStartY;
+      curRY = Math.max(-45, Math.min(45, dragStartRY + dx * 0.35));
+      curRX = Math.max(-30, Math.min(30, dragStartRX - dy * 0.25));
+      cancelAnimationFrame(rafId);
+      applyTransform(curRY, curRX, 1.02);
+    });
+    window.addEventListener('mouseup', () => {
+      if (!isDragging) return;
+      isDragging = false;
+      wrap.style.cursor = '';
+      term3d!.style.transition = 'transform 0.15s ease';
+      animateTo(BASE_Y, BASE_X);
+    });
+
+    // maximize on green dot click
+    const titleBar = term3d.querySelector('.flex.items-center.gap-1\\.5') as HTMLElement | null;
+    const greenDot = titleBar?.querySelector('span:nth-child(3)') as HTMLElement | null;
+    const redDot   = titleBar?.querySelector('span:nth-child(1)') as HTMLElement | null;
+
+    // modal overlay
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+      display:none; position:fixed; inset:0; z-index:200;
+      background:rgba(0,0,0,0.6); backdrop-filter:blur(6px);
+      align-items:center; justify-content:center;
+    `;
+    document.body.appendChild(overlay);
+
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+      width:min(860px,92vw); max-height:80vh;
+      border-radius:0.75rem; overflow:hidden;
+      box-shadow:0 32px 80px rgba(0,0,0,0.5);
+      display:flex; flex-direction:column;
+      opacity:0; transform:scale(0.92) translateY(16px);
+      transition:opacity 0.3s ease, transform 0.3s cubic-bezier(.16,1,.3,1);
+    `;
+    overlay.appendChild(modal);
+
+    function maximize() {
+      isMaximized = true;
+      // move term3d DOM node into modal
+      modal.appendChild(term3d!);
+      term3d!.style.transform  = 'none';
+      term3d!.style.transition = 'none';
+      term3d!.style.borderRadius = '0';
+      term3d!.style.width  = '100%';
+      term3d!.style.height = '100%';
+      term3d!.style.flex   = '1';
+      if (termOutput) {
+        termOutput.style.height    = 'calc(80vh - 3rem)';
+        termOutput.style.maxHeight = '100%';
+        termOutput.style.overflowY = 'auto';
+        termOutput.scrollTop = termOutput.scrollHeight;
+      }
+      overlay.style.display = 'flex';
+      requestAnimationFrame(() => {
+        modal.style.opacity   = '1';
+        modal.style.transform = 'scale(1) translateY(0)';
+      });
+    }
+
+    function restore() {
+      isMaximized = false;
+      modal.style.opacity   = '0';
+      modal.style.transform = 'scale(0.92) translateY(16px)';
+      setTimeout(() => {
+        overlay.style.display = 'none';
+        // move term3d back into wrap
+        wrap!.appendChild(term3d!);
+        term3d!.style.borderRadius = '';
+        term3d!.style.width  = '';
+        term3d!.style.height = '';
+        term3d!.style.flex   = '';
+        if (termOutput) {
+          termOutput.style.height     = '';
+          termOutput.style.maxHeight  = '';
+          termOutput.style.overflowY  = '';
+        }
+        term3d!.style.transition = 'transform 0.15s ease';
+        animateTo(BASE_Y, BASE_X);
+      }, 300);
+    }
+
+    greenDot?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      isMaximized ? restore() : maximize();
+    });
+    redDot?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (isMaximized) restore();
+    });
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) restore();
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isMaximized) restore();
+    });
+  }
+</script>
