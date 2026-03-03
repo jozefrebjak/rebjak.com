@@ -6,7 +6,7 @@ tags: ['astro', 'tailwind', 'webdev', 'building-in-public']
 lang: en
 ---
 
-Everyone should have their own corner of the internet. I kept putting it off for years. Today that changes.
+I've wanted a place to properly write things down for a long time. Here it is.
 
 ## Why now?
 
@@ -17,7 +17,7 @@ So I wanted something of my own:
 - **Blog** — to write about networks, Linux, automation and tools
 - **Portfolio** — projects and things I'm working on
 - **CV** — a digital version of my resume
-- **Bilingual** — SK and EN, useful for international opportunities
+- **Bilingual** — Slovak and English, why not
 - **Dark mode** — non-negotiable
 
 ## Why Astro?
@@ -28,8 +28,8 @@ I looked at the options. WordPress — no. Next.js — powerful, but overkill fo
 
 - **Zero JS by default** — static HTML, JavaScript only where needed. Ideal for a blog with a dark mode toggle and language switcher.
 - **Content Collections** — type-safe markdown file management directly in the repo
-- **Native i18n routing** — SK/EN without external packages
-- **GitHub Pages** — free hosting, simple setup, no servers
+- **Native i18n routing** — multi-language support without external packages
+- **GitHub Pages** — free hosting, simple setup
 
 The stack is intentionally minimal:
 
@@ -50,13 +50,13 @@ No headless CMS, no state management. Content is markdown files directly in the 
 /blog      → this blog
 ```
 
-Each section exists in both SK and EN — SK is the default (no prefix), EN is at `/en`.
+Each section exists in both Slovak and English — Slovak is the default, English at `/en`.
 
 ## Dark mode without flash
 
-Classic problem: if you handle dark mode via CSS or JS hydration, there's a brief white flash on page load.
+I use dark mode everywhere, so a white flash on page load simply wasn't an option.
 
-The solution is an inline `<script>` in `<head>` that runs before render:
+The fix: an inline `<script>` directly in `<head>` that runs before the page renders. It reads `localStorage` and the system preference — if dark mode is needed, it adds the `dark` class to `<html>` immediately.
 
 ```js
 (function () {
@@ -68,7 +68,7 @@ The solution is an inline `<script>` in `<head>` that runs before render:
 })();
 ```
 
-Tailwind gets the `dark` class on `<html>` before anything renders. No flash.
+Tailwind `dark:` utilities get their context before the browser renders anything. No flash.
 
 ## Deploy
 
@@ -86,7 +86,7 @@ This is just the foundation. I'm planning:
 
 - RSS feed
 - Sitemap and SEO metadata
-- Real CV and portfolio content
+- Projects in the portfolio
 - Articles about networks, Linux and automation
 
 **Building in public** — let's build this together.

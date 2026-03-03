@@ -6,18 +6,18 @@ tags: ['astro', 'tailwind', 'webdev', 'building-in-public']
 lang: sk
 ---
 
-Každý by mal mať vlastný kút na internete. Ja som ho roky odkladal. Dnes to meníme.
+Dlho som chcel miesto, kde si môžem veci poriadne zapísať. Tu to je.
 
 ## Prečo práve teraz?
 
-Pracujem v oblasti NetDevOps — spravujem siete, servery, linuxovú infraštruktúru a píšem kód, ktorý to všetko drží pokope. Za tie roky som sa naučil veľa vecí, riešil zaujímavé problémy a nikdy som nemal miesto, kde by som si to všetko poriadne zapísal.
+Pracujem v oblasti IT — kde spravujem siete, servery, linuxovú infraštruktúru a píšem kód, ktorý to všetko drží pokope. Za tie roky som sa naučil veľa vecí, riešil zaujímavé problémy a nikdy som nemal miesto, kde by som si to všetko poriadne zapísal.
 
 Chcel som teda niečo vlastné:
 
 - **Blog** — kde môžem písať o sieťach, Linuxe, automatizácii a nástrojoch
 - **Portfólio** — projekty a veci, na ktorých pracujem
 - **CV** — digitálna verzia životopisu
-- **Dvojjazyčnosť** — SK a EN, pre prípadné zahraničné príležitosti
+- **Dvojjazyčnosť** — slovensky aj anglicky, lebo prečo nie
 - **Dark mode** — samozrejmosť
 
 ## Prečo Astro?
@@ -28,8 +28,8 @@ Skúmal som možnosti. WordPress — nie. Next.js — výkonný, ale zbytočne k
 
 - **Zero JS by default** — statické HTML, JavaScript len tam, kde je skutočne potrebný. Pre blog s prepínačom témy a jazykovým prepínačom je to ideálne.
 - **Content Collections** — type-safe správa markdown súborov priamo v repozitári
-- **Natívne i18n routing** — SK/EN bez externých knižníc
-- **GitHub Pages** — bezplatný hosting, jednoduché nastavenie, žiadne servery
+- **Natívne i18n routing** — podpora viacerých jazykov bez externých knižníc
+- **GitHub Pages** — bezplatný hosting, jednoduché nastavenie
 
 Stack je zámerne jednoduchý:
 
@@ -50,13 +50,13 @@ GitHub Pages + GitHub Actions
 /blog      → tento blog
 ```
 
-Každá sekcia existuje v SK aj EN variante — SK je predvolená (bez prefixu), EN je na `/en`.
+Každá sekcia existuje v slovenskej aj anglickej verzii — slovenčina je predvolená, angličtina na `/en`.
 
 ## Dark mode bez bliknutia
 
-Klasický problém: ak riešite dark mode cez CSS alebo hydráciu v JavaScripte, pri načítaní stránky na chvíľu preblikne svetlý režim.
+Sám používam dark mode všade, takže prebliknutie svetlého režimu pri načítaní stránky jednoducho nešlo.
 
-Riešením je inline `<script>` v `<head>`, ktorý sa spustí ešte pred vykreslením:
+Riešenie: inline `<script>` priamo v `<head>`, ktorý sa spustí ešte pred vykreslením stránky. Prečíta `localStorage` a systémovú preferenciu — ak treba dark, pridá triedu `dark` na `<html>` okamžite.
 
 ```js
 (function () {
@@ -68,7 +68,7 @@ Riešením je inline `<script>` v `<head>`, ktorý sa spustí ešte pred vykresl
 })();
 ```
 
-Tailwind dostane triedu `dark` na element `<html>` skôr, ako sa čokoľvek vykreslí. Žiadne bliknutie.
+Tailwind `dark:` utility triedy dostanú kontext skôr, ako prehliadač vykreslí čokoľvek. Žiadne bliknutie.
 
 ## Deploy
 
@@ -86,7 +86,7 @@ Toto je len základ. Plánujem pridať:
 
 - RSS feed
 - Sitemap a SEO metadáta
-- Reálny obsah CV a portfólia
+- Projekty v portfóliu
 - Články o sieťach, Linuxe a automatizácii
 
 **Building in public** — píšeme spolu.
