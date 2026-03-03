@@ -1,5 +1,5 @@
 ---
-title: 'Stavíme rebjak.com od nuly'
+title: 'Staviame rebjak.com od nuly'
 description: 'Prečo som sa rozhodol postaviť vlastný web, aký stack som zvolil a ako celý proces prebiehal. Building in public, prvý diel.'
 pubDate: 2026-03-03
 tags: ['astro', 'tailwind', 'webdev', 'building-in-public']
