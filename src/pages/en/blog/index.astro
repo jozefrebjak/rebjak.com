@@ -7,8 +7,8 @@ import { useTranslations } from '../../../i18n/translations';
 const lang = 'en' as const;
 const t = useTranslations(lang);
 
-const allPosts = await getCollection('blog', ({ data }) =>
-  !data.draft && data.lang === 'en'
+const allPosts = await getCollection('blogEn', ({ data }) =>
+  !data.draft
 );
 
 const posts = allPosts.sort(

@@ -4,7 +4,7 @@ import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog', ({ data }) => !data.draft && data.lang === 'en');
+  const posts = await getCollection('blogEn', ({ data }) => !data.draft);
   return posts.map((post) => ({
     params: { slug: post.id.replace(/\.md$/, '') },
     props: { post },
@@ -13,6 +13,10 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props;
 const { Content } = await render(post);
+
+const pubDateFormatted = post.data.pubDate.toLocaleDateString('en-US', {
+  year: 'numeric', month: 'long', day: 'numeric',
+});
 
 function formatDate(date: Date): string {
   return date.toLocaleDateString('en-US', {
@@ -25,7 +29,7 @@ function readingTime(body: string): number {
 }
 ---
 
-<BaseLayout title={post.data.title} description={post.data.description}>
+<BaseLayout title={`${post.data.title} · ${pubDateFormatted}`} description={post.data.description} alternatePath="/blog">
   <article class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
     <a href="/en/blog"
       class="inline-flex items-center gap-1 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 mb-8 transition-colors">

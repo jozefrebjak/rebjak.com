@@ -8,96 +8,335 @@ const t = useTranslations(lang);
 
 const experience = [
   {
-    role: 'System Administrator & Developer',
-    company: 'ICT Solutions, s.r.o.',
-    period: '09/2019 — present',
-    desc: 'Linux server management, Docker Swarm and Proxmox cluster operations. Running and developing internal services: KEA DHCP, PowerDNS, full Prometheus monitoring stack (Prometheus, Alertmanager, Grafana). Internal tooling development and process automation. Ongoing involvement in network infrastructure management.',
+    role:     'System Administrator & Developer',
+    company:  'ICT Solutions, s.r.o.',
+    period:   `09/2019 — ${t('cv.present')}`,
+    location: 'Košice, SK',
+    color: 'brand',
+    bullets: [
+      'Linux server management (Debian/Ubuntu/RHEL), Docker Swarm clusters and Proxmox hypervisors',
+      'Development of internal and commercial applications: CRM, network device management and other tools',
+      'Building custom Docker images and extending CI/CD pipelines for internal services',
+      'ISP DNS stack: PowerDNS Auth, PowerDNS Recursor, dnsdist',
+      'Customer access services: ISC KEA DHCP, FreeRADIUS (PPPoE authentication)',
+      'Working with GPON access networks: configuration and management of OLT devices',
+      'Network device monitoring via SNMP using LibreNMS',
+      'Server and application monitoring: Prometheus, Alertmanager, Grafana, Loki',
+    ],
   },
   {
-    role: 'Network Administrator',
-    company: 'GeCom, s.r.o.',
-    period: '09/2017 — 09/2019',
-    desc: 'Management and development of network infrastructure for a regional ISP. Configuration and monitoring of routers, switches and firewalls. Outage resolution and network optimization.',
+    role:     'Network & System Administrator',
+    company:  'GeCom, s.r.o.',
+    period:   '09/2017 — 09/2019',
+    location: 'Michalovce, SK',
+    color: 'violet',
+    bullets: [
+      'Management and development of network infrastructure for a regional ISP in the Zemplín area',
+      'Configuration and monitoring of routers, switches and firewalls (Mikrotik, Cisco, Huawei, UBNT)',
+      'WiFi network and radio link management (UBNT airMAX, point-to-point, point-to-multipoint)',
+      'Working with GPON access networks: configuration and management of OLT devices',
+      'Virtualization infrastructure management: VMware ESXi and vCenter',
+      'Linux server administration and internal systems support',
+      'Outage resolution, network optimization and end-customer support',
+    ],
   },
   {
-    role: 'Network Technician (project)',
-    company: 'ICT Solutions, s.r.o.',
-    period: '06/2017 — 08/2017',
-    desc: 'First exposure to IT after studying at the University of Management. Worked on a network migration project — preparing configurations for Cisco access switches and on-site replacement of Avaya devices with Cisco (one by one). Configurations were applied manually via terminal, no automation.',
+    role:     'Network Technician (project)',
+    company:  'ICT Solutions, s.r.o.',
+    period:   '06/2017 — 08/2017',
+    location: 'Košice, SK',
+    color: 'emerald',
+    bullets: [
+      'Migration project: on-site replacement of Avaya devices with Cisco access switches',
+      'Preparing and manually loading Cisco switch configurations via terminal',
+      'First exposure to production IT environment after studies at the University of Management',
+    ],
   },
 ];
 
 const skillGroups = [
   {
     label: 'Networking',
-    skills: ['TCP/IP', 'BGP', 'OSPF', 'VLANs', 'VPN', 'Firewall', 'Mikrotik', 'Cisco'],
+    icon: '🌐',
+    skills: ['TCP/IP', 'BGP', 'OSPF', 'VLANs', 'VPN', 'Firewall', 'Mikrotik', 'Cisco IOS', 'Huawei VRP', 'Fortinet', 'Edge-Core', 'UBNT airMAX'],
   },
   {
     label: 'Linux',
-    skills: ['Debian', 'Ubuntu', 'RHEL', 'systemd', 'bash', 'cron', 'SSH', 'iptables', 'nftables'],
+    icon: '🐧',
+    skills: ['Debian', 'Ubuntu', 'RHEL', 'systemd', 'bash', 'iptables', 'nftables', 'SSH', 'cron'],
   },
   {
     label: 'Infrastructure',
-    skills: ['Proxmox', 'Docker Swarm', 'KVM', 'LXC'],
-  },
-  {
-    label: 'Services',
-    skills: ['KEA DHCP', 'PowerDNS', 'Nginx', 'HAProxy'],
+    icon: '🖥️',
+    skills: ['Proxmox', 'KVM', 'LXC', 'VMware ESXi', 'vCenter', 'Docker Swarm'],
   },
   {
     label: 'Monitoring',
-    skills: ['Prometheus', 'Alertmanager', 'Grafana', 'Loki', 'SNMP', 'syslog'],
+    icon: '📊',
+    skills: ['Prometheus', 'Alertmanager', 'Grafana', 'Loki', 'LibreNMS', 'SNMP', 'syslog'],
   },
   {
     label: 'Automation & code',
-    skills: ['Ansible', 'Python', 'Bash', 'Git', 'CI/CD', 'TypeScript', 'PHP'],
+    icon: '⚙️',
+    skills: ['Ansible', 'Python', 'Bash', 'PHP', 'TypeScript', 'Git', 'CI/CD'],
+  },
+  {
+    label: 'Web development',
+    icon: '🌍',
+    skills: ['CodeIgniter 4', 'HTMX', 'Alpine.js', 'FrankenPHP', 'PHP-FPM'],
   },
 ];
+
+const colorMap: Record<string, string> = {
+  brand:   'var(--color-brand-dark)',
+  violet:  'var(--color-violet-dark)',
+  emerald: 'var(--color-emerald-dark)',
+};
+
+const dotClass: Record<string, string> = {
+  brand:   'border-[var(--color-brand-dark)] bg-[var(--color-brand-dark)]/30 shadow-[0_0_8px_var(--color-brand-dark)]',
+  violet:  'border-[var(--color-violet-dark)] bg-[var(--color-violet-dark)]/30 shadow-[0_0_8px_var(--color-violet-dark)]',
+  emerald: 'border-[var(--color-emerald-dark)] bg-[var(--color-emerald-dark)]/30 shadow-[0_0_8px_var(--color-emerald-dark)]',
+};
+
+const topBarClass: Record<string, string> = {
+  brand:   'from-[var(--color-brand-dark)]',
+  violet:  'from-[var(--color-violet-dark)]',
+  emerald: 'from-[var(--color-emerald-dark)]',
+};
 ---
 
-<BaseLayout title={t('cv.title')}>
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
-    <div class="mb-12">
-      <h1 class="text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">{t('cv.title')}</h1>
-      <p class="text-zinc-500 dark:text-zinc-400">Jozef Rebjak · NetDevOps</p>
+<BaseLayout title={t('cv.title')} description="Jozef Rebjak — DevOps engineer. Networks, servers, Linux, automation.">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+
+    <!-- ── CV HEADER ──────────────────────────────────────────── -->
+    <div class="glass rounded-2xl p-6 sm:p-10 mb-10 relative overflow-hidden">
+      <div class="absolute -top-16 -right-16 w-64 h-64 rounded-full opacity-[0.07] blur-3xl pointer-events-none"
+        style="background: radial-gradient(circle, var(--color-brand-dark), var(--color-violet-dark));">
+      </div>
+      <div class="absolute -bottom-20 -left-10 w-48 h-48 rounded-full opacity-[0.05] blur-3xl pointer-events-none"
+        style="background: var(--color-emerald-dark);">
+      </div>
+
+      <div class="relative flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-10">
+        <div class="flex-shrink-0 w-20 h-20 rounded-2xl flex items-center justify-center text-2xl font-bold text-white shadow-lg ring-2 ring-white/10"
+          style="background: linear-gradient(135deg, var(--color-brand-dark), var(--color-violet-dark));">
+          JR
+        </div>
+
+        <div class="flex-1 min-w-0">
+          <p class="font-mono text-xs text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-1">curriculum vitae</p>
+          <h1 class="text-3xl sm:text-4xl font-bold text-zinc-900 dark:text-zinc-100 mb-1.5">Jozef Rebjak</h1>
+          <p class="text-sm font-mono font-medium text-transparent bg-clip-text inline-block"
+            style="background-image: linear-gradient(135deg, var(--color-brand-dark), var(--color-violet-dark));">
+            DevOps engineer
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-2 sm:flex-col sm:items-end">
+          <a href="mailto:jozef@rebjak.com"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg glass text-xs font-mono text-zinc-500 dark:text-zinc-400 hover:text-[var(--color-brand-dark)] transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+            jozef@rebjak.com
+          </a>
+          <a href="https://github.com/jozefrebjak" target="_blank" rel="noopener"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg glass text-xs font-mono text-zinc-500 dark:text-zinc-400 hover:text-[var(--color-violet-dark)] transition-colors">
+            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+            </svg>
+            jozefrebjak
+          </a>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg glass text-xs font-mono text-zinc-500 dark:text-zinc-400">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            Košice, SK
+          </span>
+        </div>
+      </div>
     </div>
 
-    <section class="mb-12">
-      <h2 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-6 pb-2 border-b border-zinc-200 dark:border-zinc-800">
-        {t('cv.experience')}
-      </h2>
-      <div class="space-y-8">
-        {experience.map(({ role, company, period, desc }) => (
-          <div class="grid sm:grid-cols-[1fr_auto] gap-1 sm:gap-4">
-            <div>
-              <h3 class="font-semibold text-zinc-900 dark:text-zinc-100">{role}</h3>
-              <p class="text-[var(--color-brand)] dark:text-[var(--color-brand-dark)] text-sm font-medium">{company}</p>
-              <p class="text-zinc-600 dark:text-zinc-400 text-sm mt-2">{desc}</p>
-            </div>
-            <p class="text-sm text-zinc-500 dark:text-zinc-400 whitespace-nowrap sm:text-right">{period}</p>
-          </div>
-        ))}
-      </div>
-    </section>
+    <div class="grid lg:grid-cols-[1fr_300px] gap-8">
 
-    <section class="mb-12">
-      <h2 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-6 pb-2 border-b border-zinc-200 dark:border-zinc-800">
-        {t('cv.skills')}
-      </h2>
-      <div class="space-y-5">
-        {skillGroups.map(({ label, skills }) => (
-          <div>
-            <p class="text-xs font-mono font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2">{label}</p>
-            <div class="flex flex-wrap gap-2">
+      <!-- ── LEFT COLUMN ────────────────────────────────────────── -->
+      <div class="space-y-10">
+
+        <!-- Experience -->
+        <section>
+          <div class="flex items-center gap-3 mb-7">
+            <span class="font-mono text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">{t('cv.experience')}</span>
+            <div class="flex-1 h-px bg-zinc-200 dark:bg-zinc-800"></div>
+          </div>
+
+          <div class="space-y-5">
+            {experience.map(({ role, company, period, location, color, bullets }) => (
+              <div>
+                <div class="glass rounded-xl overflow-hidden spotlight-card" data-color={color}
+                  style={`border-left: 3px solid ${colorMap[color]};`}>
+                  <div class="p-5">
+                    <div class="flex flex-wrap items-start justify-between gap-2 mb-4">
+                      <div>
+                        <h3 class="font-semibold text-base text-zinc-900 dark:text-zinc-100 mb-0.5">{role}</h3>
+                        <p class="text-sm font-mono font-medium" style={`color: ${colorMap[color]}`}>{company}</p>
+                      </div>
+                      <div class="text-right shrink-0">
+                        <p class="text-xs font-mono text-zinc-400 dark:text-zinc-500 whitespace-nowrap">{period}</p>
+                        <p class="text-xs font-mono text-zinc-500 dark:text-zinc-600 mt-0.5">{location}</p>
+                      </div>
+                    </div>
+                    <ul class="space-y-2">
+                      {bullets.map((b) => (
+                        <li class="flex gap-4 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                          <span class="mt-2 w-1.5 h-1.5 rounded-full flex-shrink-0" style={`background: ${colorMap[color]}; opacity: 0.7;`}></span>
+                          {b}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <!-- Education -->
+        <section>
+          <div class="flex items-center gap-3 mb-7">
+            <span class="font-mono text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">{t('cv.education')}</span>
+            <div class="flex-1 h-px bg-zinc-200 dark:bg-zinc-800"></div>
+          </div>
+
+          <div class="space-y-3">
+            <div class="glass rounded-xl overflow-hidden spotlight-card">
+              <div class="h-0.5 w-full" style="background: linear-gradient(90deg, var(--color-violet-dark), transparent);"></div>
+              <div class="p-5 flex flex-wrap items-start justify-between gap-2">
+                <div>
+                  <h3 class="font-semibold text-zinc-900 dark:text-zinc-100 mb-0.5">Mgr. — Management</h3>
+                  <p class="text-sm font-mono font-medium" style="color: var(--color-violet-dark)">
+                    University of Prešov, Faculty of Management
+                  </p>
+                </div>
+                <p class="text-xs font-mono text-zinc-400 dark:text-zinc-500 whitespace-nowrap">2015 — 2017</p>
+              </div>
+            </div>
+
+            <div class="glass rounded-xl overflow-hidden spotlight-card">
+              <div class="h-0.5 w-full" style="background: linear-gradient(90deg, var(--color-violet-dark), transparent); opacity: 0.5;"></div>
+              <div class="p-5 flex flex-wrap items-start justify-between gap-2">
+                <div>
+                  <h3 class="font-semibold text-zinc-900 dark:text-zinc-100 mb-0.5">Bc. — Management</h3>
+                  <p class="text-sm font-mono font-medium" style="color: var(--color-violet-dark)">
+                    University of Prešov, Faculty of Management
+                  </p>
+                </div>
+                <p class="text-xs font-mono text-zinc-400 dark:text-zinc-500 whitespace-nowrap">2012 — 2015</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- ── RIGHT COLUMN: SKILLS ──────────────────────────────── -->
+      <div class="space-y-4">
+        <div class="flex items-center gap-3 mb-7">
+          <span class="font-mono text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">{t('cv.skills')}</span>
+          <div class="flex-1 h-px bg-zinc-200 dark:bg-zinc-800"></div>
+        </div>
+
+        {skillGroups.map(({ label, icon, skills }) => (
+          <div class="glass rounded-xl p-4 spotlight-card">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-base leading-none">{icon}</span>
+              <span class="text-sm font-bold text-zinc-900 dark:text-white tracking-tight">{label}</span>
+            </div>
+            <div class="w-full h-px bg-zinc-200 dark:bg-white/[0.1] mb-3"></div>
+            <div class="flex flex-wrap gap-1.5">
               {skills.map((skill) => (
-                <span class="px-3 py-1 rounded-full text-sm font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
+                <span class="px-2.5 py-1 rounded-full text-xs font-mono bg-zinc-100 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-300 border border-zinc-200/60 dark:border-white/[0.06] hover:border-zinc-300 dark:hover:border-white/20 transition-colors cursor-default">
                   {skill}
                 </span>
               ))}
             </div>
           </div>
         ))}
+
+        <!-- Languages -->
+        <div class="glass rounded-xl p-4">
+          <p class="text-xs font-mono font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+            <span>🌍</span> Languages
+          </p>
+          <div class="space-y-2">
+            {[
+              { lang: 'Slovak',  level: 'Native' },
+              { lang: 'English', level: 'Technical / B2' },
+            ].map(({ lang: l, level }) => (
+              <div class="flex justify-between">
+                <span class="text-xs font-mono text-zinc-700 dark:text-zinc-300">{l}</span>
+                <span class="text-xs font-mono text-zinc-400 dark:text-zinc-500">{level}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </div>
-    </section>
+    </div>
+
   </div>
 </BaseLayout>
+
+<style>
+  .spotlight-card {
+    position: relative;
+    cursor: crosshair;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+  }
+  .spotlight-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.3);
+  }
+  .spotlight-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      800px circle at var(--mx, -400px) var(--my, -400px),
+      var(--spotlight-color, rgba(255,255,255,0.07)) 0%,
+      transparent 60%
+    );
+    pointer-events: none;
+    z-index: 0;
+    transition: opacity 0.3s ease;
+    opacity: 0;
+    border-radius: inherit;
+  }
+  .spotlight-card:hover::before {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  const spotlightColors: Record<string, string> = {
+    brand:   'rgba(99, 179, 237, 0.08)',
+    violet:  'rgba(167, 139, 250, 0.08)',
+    emerald: 'rgba(52, 211, 153, 0.08)',
+    default: 'rgba(255, 255, 255, 0.06)',
+  };
+
+  document.querySelectorAll<HTMLElement>('.spotlight-card').forEach((card) => {
+    const colorKey = card.dataset.color ?? 'default';
+    const color = spotlightColors[colorKey] ?? spotlightColors.default;
+    card.style.setProperty('--spotlight-color', color);
+
+    card.addEventListener('mousemove', (e: MouseEvent) => {
+      const rect = card.getBoundingClientRect();
+      card.style.setProperty('--mx', `${e.clientX - rect.left}px`);
+      card.style.setProperty('--my', `${e.clientY - rect.top}px`);
+    });
+  });
+</script>

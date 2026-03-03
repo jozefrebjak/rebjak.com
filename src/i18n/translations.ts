@@ -18,7 +18,7 @@ export const ui = {
 
     // Hero
     'hero.greeting': 'Ahoj, som',
-    'hero.tagline': 'NetDevOps inžinier. Siete, servery, kód.',
+    'hero.tagline': 'DevOps inžinier. Servery, automatizácia, kód.',
     'hero.cta.cv': 'Pozri CV',
     'hero.cta.portfolio': 'Moje projekty',
     'hero.cta.blog': 'Čítaj blog',
@@ -61,7 +61,7 @@ export const ui = {
 
     // Hero
     'hero.greeting': 'Hi, I\'m',
-    'hero.tagline': 'NetDevOps engineer. Networks, servers, code.',
+    'hero.tagline': 'DevOps engineer. Servers, automation, code.',
     'hero.cta.cv': 'View CV',
     'hero.cta.portfolio': 'My projects',
     'hero.cta.blog': 'Read blog',
