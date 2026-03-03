@@ -29,7 +29,6 @@
   body {
     /* light: very clean off-white; dark: near-black with slight blue tint */
     @apply bg-[#f8f9fb] text-zinc-900 dark:bg-[#080c12] dark:text-zinc-100;
-    @apply transition-colors duration-200;
   }
 
   h1, h2, h3, h4, h5, h6 {
