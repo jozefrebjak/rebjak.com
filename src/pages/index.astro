@@ -4,80 +4,188 @@ import { useTranslations, getLangFromUrl } from '../i18n/translations';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
+
+const cvHref = lang === 'en' ? '/en/cv' : '/cv';
+const portfolioHref = lang === 'en' ? '/en/portfolio' : '/portfolio';
+const blogHref = lang === 'en' ? '/en/blog' : '/blog';
+
+const stack = [
+  'Linux', 'Proxmox', 'Docker Swarm',
+  'Ansible', 'Python', 'PowerDNS',
+  'Prometheus', 'Grafana', 'Mikrotik',
+];
 ---
 
 <BaseLayout title="Jozef Rebjak" description={t('hero.tagline')}>
+
   <!-- Hero -->
-  <section class="max-w-4xl mx-auto px-4 sm:px-6 py-20 sm:py-32">
+  <section class="relative max-w-4xl mx-auto px-4 sm:px-6 pt-20 pb-16 sm:pt-32 sm:pb-24 overflow-hidden">
+
+    <!-- Subtle grid background -->
+    <div class="absolute inset-0 -z-10 opacity-[0.03] dark:opacity-[0.06]"
+      style="background-image: linear-gradient(var(--color-brand) 1px, transparent 1px), linear-gradient(90deg, var(--color-brand) 1px, transparent 1px); background-size: 40px 40px;">
+    </div>
+
+    <!-- Glow blob -->
+    <div class="absolute -top-32 -right-32 w-96 h-96 rounded-full -z-10 blur-3xl opacity-10 dark:opacity-15"
+      style="background: radial-gradient(circle, var(--color-brand), transparent 70%);">
+    </div>
+
     <div class="max-w-2xl">
-      <p class="text-[var(--color-brand)] dark:text-[var(--color-brand-dark)] font-mono text-sm font-medium mb-4 tracking-wide">
-        {t('hero.greeting')} Jozef 👋
-      </p>
-      <h1 class="text-4xl sm:text-5xl font-bold text-zinc-900 dark:text-zinc-100 leading-tight mb-6">
-        {t('hero.tagline')}
+      <!-- Monospace label -->
+      <div class="inline-flex items-center gap-2 font-mono text-xs text-zinc-500 dark:text-zinc-400 mb-6 px-3 py-1.5 rounded-full border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
+        <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+        {lang === 'sk' ? 'dostupný na nové projekty' : 'available for new projects'}
+      </div>
+
+      <!-- Main heading -->
+      <h1 class="text-5xl sm:text-6xl font-bold text-zinc-900 dark:text-zinc-100 leading-[1.1] tracking-tight mb-6 hero-heading">
+        {t('hero.greeting')}
+        <span class="block text-transparent bg-clip-text"
+          style="background-image: linear-gradient(135deg, var(--color-brand), oklch(0.75 0.15 200));">
+          Jozef Rebjak.
+        </span>
       </h1>
-      <p class="text-lg text-zinc-600 dark:text-zinc-400 leading-relaxed mb-10">
+
+      <!-- Tagline -->
+      <p class="text-xl sm:text-2xl font-medium text-zinc-600 dark:text-zinc-300 mb-4">
+        {t('hero.tagline')}
+      </p>
+
+      <!-- Bio -->
+      <p class="text-base text-zinc-500 dark:text-zinc-400 leading-relaxed mb-10 max-w-xl">
         {lang === 'sk'
           ? 'Pracujem so sieťami, servermi a Linuxom — a píšem kód, ktorý to celé drží pokope. Zaujímam sa o automatizáciu, infraštruktúru a NetDevOps prístup k správe prostredí.'
           : 'I work with networks, servers and Linux — and write code that holds it all together. I\'m into automation, infrastructure and the NetDevOps approach to managing environments.'}
       </p>
-      <div class="flex flex-wrap gap-3">
-        <a
-          href={lang === 'en' ? '/en/cv' : '/cv'}
-          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-sm font-medium hover:bg-zinc-700 dark:hover:bg-zinc-300 transition-colors"
-        >
+
+      <!-- CTAs -->
+      <div class="flex flex-wrap gap-3 mb-12">
+        <a href={cvHref}
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-sm font-semibold hover:bg-zinc-700 dark:hover:bg-zinc-300 transition-all hover:-translate-y-0.5 shadow-sm">
           {t('hero.cta.cv')}
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
         </a>
-        <a
-          href={lang === 'en' ? '/en/portfolio' : '/portfolio'}
-          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 text-sm font-medium hover:border-zinc-400 dark:hover:border-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
-        >
-          {t('hero.cta.portfolio')}
-        </a>
-        <a
-          href={lang === 'en' ? '/en/blog' : '/blog'}
-          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 text-sm font-medium hover:border-zinc-400 dark:hover:border-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
-        >
+        <a href={blogHref}
+          class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 text-sm font-medium hover:border-zinc-400 dark:hover:border-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all hover:-translate-y-0.5">
           {t('hero.cta.blog')}
         </a>
+      </div>
+
+      <!-- Stack chips -->
+      <div class="flex flex-wrap gap-2 items-center">
+        <span class="text-xs font-mono text-zinc-400 dark:text-zinc-500 mr-1">stack://</span>
+        {stack.map((item) => (
+          <span class="px-2.5 py-1 rounded-md text-xs font-mono font-medium bg-zinc-100 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700/50">
+            {item}
+          </span>
+        ))}
       </div>
     </div>
   </section>
 
-  <!-- Quick links section -->
-  <section class="max-w-4xl mx-auto px-4 sm:px-6 pb-16">
+  <!-- Divider -->
+  <div class="max-w-4xl mx-auto px-4 sm:px-6">
+    <hr class="border-zinc-200 dark:border-zinc-800" />
+  </div>
+
+  <!-- Stats / highlights -->
+  <section class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-6">
+      {[
+        { value: '8+', label: lang === 'sk' ? 'rokov v IT' : 'years in IT' },
+        { value: '2017', label: lang === 'sk' ? 'prvá sieť' : 'first network' },
+        { value: '100+', label: lang === 'sk' ? 'Linux serverov' : 'Linux servers' },
+        { value: '∞', label: lang === 'sk' ? 'kávičiek' : 'coffees' },
+      ].map(({ value, label }) => (
+        <div class="flex flex-col gap-1">
+          <span class="text-3xl font-bold text-zinc-900 dark:text-zinc-100 font-mono">{value}</span>
+          <span class="text-sm text-zinc-500 dark:text-zinc-400">{label}</span>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Divider -->
+  <div class="max-w-4xl mx-auto px-4 sm:px-6">
+    <hr class="border-zinc-200 dark:border-zinc-800" />
+  </div>
+
+  <!-- Navigation cards -->
+  <section class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+    <p class="text-xs font-mono text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-6">
+      {lang === 'sk' ? '— Čo tu nájdeš' : '— What you\'ll find here'}
+    </p>
     <div class="grid sm:grid-cols-3 gap-4">
       {[
         {
-          href: lang === 'en' ? '/en/cv' : '/cv',
-          icon: '📄',
-          title: t('nav.cv'),
-          desc: lang === 'sk' ? 'Skúsenosti, technológie, zručnosti' : 'Experience, technologies, skills',
+          href: cvHref,
+          label: 'CV',
+          title: lang === 'sk' ? 'Skúsenosti & zručnosti' : 'Experience & skills',
+          desc: lang === 'sk'
+            ? 'Od sieťového technika cez ISP admina po systémového admina a vývojára.'
+            : 'From network tech to ISP admin, sysadmin and developer.',
+          accent: 'group-hover:border-blue-400 dark:group-hover:border-blue-600',
+          dot: 'bg-blue-500',
         },
         {
-          href: lang === 'en' ? '/en/portfolio' : '/portfolio',
-          icon: '🛠️',
-          title: t('nav.portfolio'),
-          desc: lang === 'sk' ? 'Projekty a nástroje' : 'Projects and tools',
+          href: portfolioHref,
+          label: 'Portfolio',
+          title: lang === 'sk' ? 'Projekty & nástroje' : 'Projects & tools',
+          desc: lang === 'sk'
+            ? 'Veci, ktoré som postavil, automatizoval alebo opravil.'
+            : 'Things I built, automated or fixed.',
+          accent: 'group-hover:border-violet-400 dark:group-hover:border-violet-600',
+          dot: 'bg-violet-500',
         },
         {
-          href: lang === 'en' ? '/en/blog' : '/blog',
-          icon: '✍️',
-          title: t('nav.blog'),
-          desc: lang === 'sk' ? 'Siete, Linux, automatizácia' : 'Networks, Linux, automation',
+          href: blogHref,
+          label: 'Blog',
+          title: lang === 'sk' ? 'Siete, Linux, kód' : 'Networks, Linux, code',
+          desc: lang === 'sk'
+            ? 'Poznámky z praxe. Čo som riešil, čo som sa naučil.'
+            : 'Notes from the field. What I solved, what I learned.',
+          accent: 'group-hover:border-emerald-400 dark:group-hover:border-emerald-600',
+          dot: 'bg-emerald-500',
         },
-      ].map(({ href, icon, title, desc }) => (
-        <a
-          href={href}
-          class="group flex flex-col gap-2 p-5 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-all"
-        >
-          <span class="text-2xl">{icon}</span>
-          <span class="font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-[var(--color-brand)] dark:group-hover:text-[var(--color-brand-dark)] transition-colors">
+      ].map(({ href, label, title, desc, accent, dot }) => (
+        <a href={href}
+          class={`group flex flex-col p-5 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-all hover:-translate-y-0.5 ${accent}`}>
+          <div class="flex items-center gap-2 mb-3">
+            <span class={`w-2 h-2 rounded-full ${dot}`}></span>
+            <span class="text-xs font-mono text-zinc-400 dark:text-zinc-500">{label}</span>
+          </div>
+          <span class="font-semibold text-zinc-900 dark:text-zinc-100 mb-1.5 group-hover:text-[var(--color-brand)] dark:group-hover:text-[var(--color-brand-dark)] transition-colors">
             {title}
           </span>
-          <span class="text-sm text-zinc-500 dark:text-zinc-400">{desc}</span>
+          <span class="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed flex-1">
+            {desc}
+          </span>
+          <span class="mt-4 text-xs font-mono text-zinc-400 dark:text-zinc-600 group-hover:text-[var(--color-brand)] dark:group-hover:text-[var(--color-brand-dark)] transition-colors">
+            {lang === 'sk' ? 'otvoriť →' : 'open →'}
+          </span>
         </a>
       ))}
     </div>
   </section>
+
 </BaseLayout>
+
+<style>
+  .hero-heading {
+    animation: fadeUp 0.6s ease both;
+  }
+
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
