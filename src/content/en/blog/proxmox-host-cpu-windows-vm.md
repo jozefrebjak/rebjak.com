@@ -3,7 +3,7 @@ title: 'Why host CPU type on Proxmox is slower for Windows VMs'
 description: 'The host CPU type enables Spectre/Meltdown mitigations inside Windows, dramatically slowing down RAM operations. The fix is x86-64-v3.'
 pubDate: 2026-03-04T18:00:00
 tags: ['proxmox', 'windows', 'virtualization', 'performance', 'homelab']
-draft: true
+draft: false
 lang: en
 ---
 
