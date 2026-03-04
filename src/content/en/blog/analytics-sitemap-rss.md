@@ -1,7 +1,7 @@
 ---
 title: 'Analytics, sitemap and RSS — going public'
 description: 'I added Umami analytics, sitemap, robots.txt and RSS feeds to the site. Privacy-first tracking, zero cookie banners. Building in public, episode two.'
-pubDate: 2026-03-04
+pubDate: 2026-03-04T10:00:00
 tags: ['astro', 'analytics', 'umami', 'seo', 'building-in-public']
 ---
 

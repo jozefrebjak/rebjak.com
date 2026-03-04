@@ -58,3 +58,33 @@ function readingTime(body: string): number {
     </div>
   </article>
 </BaseLayout>
+
+<script>
+  // Wrap tables: border + radius on wrapper, overflow scroll on mobile
+  document.querySelectorAll('.prose table').forEach((table) => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'table-wrapper';
+    table.parentNode!.insertBefore(wrapper, table);
+    wrapper.appendChild(table);
+  });
+
+  document.querySelectorAll('.prose pre').forEach((pre) => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'code-block-wrapper';
+    pre.parentNode!.insertBefore(wrapper, pre);
+    wrapper.appendChild(pre);
+
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.textContent = 'Copy';
+    btn.setAttribute('aria-label', 'Copy code');
+    wrapper.appendChild(btn);
+
+    btn.addEventListener('click', async () => {
+      const code = (pre.querySelector('code') ?? pre).textContent ?? '';
+      await navigator.clipboard.writeText(code);
+      btn.textContent = '✓ Copied';
+      setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+    });
+  });
+</script>

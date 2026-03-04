@@ -9,6 +9,17 @@ export default defineConfig({
   output: 'static',
   integrations: [sitemap()],
 
+  markdown: {
+    shikiConfig: {
+      themes: {
+        light: 'github-light',
+        dark: 'one-dark-pro',
+      },
+      defaultColor: false,
+      wrap: false,
+    },
+  },
+
   i18n: {
     defaultLocale: 'sk',
     locales: ['sk', 'en'],

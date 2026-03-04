@@ -1,7 +1,7 @@
 ---
 title: 'Analytics, sitemap a RSS — web ide do sveta'
 description: 'Ako som pridal Umami analytics, sitemap, robots.txt a RSS feed. Prečo privacy-first tracking a čo mi to dáva. Building in public, druhý diel.'
-pubDate: 2026-03-04
+pubDate: 2026-03-04T10:00:00
 tags: ['astro', 'analytics', 'umami', 'seo', 'building-in-public']
 ---
 
