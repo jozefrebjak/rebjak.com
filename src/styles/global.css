@@ -83,6 +83,34 @@
     @apply border-zinc-200 dark:border-zinc-800 my-8;
   }
 
+  .prose table {
+    @apply w-full text-sm my-6 border-collapse overflow-hidden rounded-xl;
+    display: block;
+    overflow-x: auto;
+  }
+
+  .prose thead {
+    @apply bg-zinc-100 dark:bg-zinc-800/60;
+  }
+
+  .prose th {
+    @apply px-4 py-2.5 text-left font-semibold text-zinc-700 dark:text-zinc-200
+           border-b border-zinc-200 dark:border-zinc-700;
+  }
+
+  .prose td {
+    @apply px-4 py-2.5 text-zinc-600 dark:text-zinc-300
+           border-b border-zinc-100 dark:border-zinc-800;
+  }
+
+  .prose tbody tr:last-child td {
+    @apply border-b-0;
+  }
+
+  .prose tbody tr:hover {
+    @apply bg-zinc-50 dark:bg-zinc-800/30;
+  }
+
   /* ── Utility: gradient text ─────────────────── */
   .grad-text {
     @apply text-transparent bg-clip-text;

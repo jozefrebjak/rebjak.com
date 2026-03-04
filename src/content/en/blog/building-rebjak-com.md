@@ -1,7 +1,7 @@
 ---
 title: 'Building rebjak.com from scratch'
 description: 'Why I decided to build my own website, what stack I chose and how the whole process went. Building in public, episode one.'
-pubDate: 2026-03-03
+pubDate: 2026-03-03T10:00:00
 tags: ['astro', 'tailwind', 'webdev', 'building-in-public']
 lang: en
 ---
