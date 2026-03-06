@@ -163,6 +163,49 @@
     @apply rounded-none my-0 border-0 border-t border-zinc-200 dark:border-zinc-800/60;
   }
 
+  /* ── Callout alerts ────────────────────────── */
+  .prose .callout {
+    @apply my-6 rounded-xl border px-5 py-4 text-sm leading-relaxed;
+  }
+
+  .prose .callout > p:last-child {
+    @apply mb-0;
+  }
+
+  .prose .callout::before {
+    @apply block font-semibold text-xs uppercase tracking-wider mb-2;
+  }
+
+  .prose .callout.note {
+    @apply bg-blue-50/60 border-blue-200 text-blue-900
+           dark:bg-blue-950/30 dark:border-blue-800/50 dark:text-blue-200;
+  }
+
+  .prose .callout.note::before {
+    content: '📝 Note';
+    @apply text-blue-600 dark:text-blue-400;
+  }
+
+  .prose .callout.tip {
+    @apply bg-emerald-50/60 border-emerald-200 text-emerald-900
+           dark:bg-emerald-950/30 dark:border-emerald-800/50 dark:text-emerald-200;
+  }
+
+  .prose .callout.tip::before {
+    content: '💡 Tip';
+    @apply text-emerald-600 dark:text-emerald-400;
+  }
+
+  .prose .callout.warning {
+    @apply bg-amber-50/60 border-amber-200 text-amber-900
+           dark:bg-amber-950/30 dark:border-amber-800/50 dark:text-amber-200;
+  }
+
+  .prose .callout.warning::before {
+    content: '⚠️ Warning';
+    @apply text-amber-600 dark:text-amber-400;
+  }
+
   /* ── Code block copy button ─────────────────── */
   .code-block-wrapper {
     @apply relative my-6;
