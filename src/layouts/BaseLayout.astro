@@ -79,6 +79,23 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
         }
       })();
     </script>
+
+    <!-- Language redirect: detect browser lang on first visit -->
+    <script is:inline>
+      (function () {
+        if (localStorage.getItem("langChosen")) return;
+        var path = window.location.pathname;
+        var isRoot = path === "/" || path === "/index.html";
+        if (!isRoot) return;
+        var browserLang = (navigator.language || "").slice(0, 2).toLowerCase();
+        if (browserLang === "sk") {
+          localStorage.setItem("langChosen", "sk");
+        } else {
+          localStorage.setItem("langChosen", "en");
+          window.location.replace("/en");
+        }
+      })();
+    </script>
   </head>
   <body class="min-h-screen flex flex-col">
     <canvas id="bg-canvas" class="fixed inset-0 -z-10 pointer-events-none"

@@ -26,6 +26,13 @@ const year = new Date().getFullYear();
 
     <p class="font-mono text-xs text-zinc-400 dark:text-zinc-600">
       <a
+        href={lang === "en" ? "/en/rss.xml" : "/rss.xml"}
+        class="text-zinc-500 dark:text-zinc-500 hover:text-[var(--color-brand-dark)] transition-colors"
+      >
+        RSS
+      </a>
+      {" · "}
+      <a
         href="https://cloud.umami.is/analytics/eu/share/oFVqOmBoVR0LhsPp"
         target="_blank"
         rel="noopener"
