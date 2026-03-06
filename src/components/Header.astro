@@ -71,7 +71,18 @@ const currentPath = Astro.url.pathname;
       </nav>
       <div class="w-px h-4 bg-zinc-200 dark:bg-white/10 mx-1"></div>
       <a
+        href={lang === "en" ? "/en/rss.xml" : "/rss.xml"}
+        class="p-1.5 rounded-md text-zinc-400 dark:text-zinc-500 hover:text-[var(--color-brand-dark)] hover:bg-zinc-100/80 dark:hover:bg-white/[0.05] transition-all"
+        title="RSS Feed"
+      >
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="6.18" cy="17.82" r="2.18"></circle>
+          <path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"></path>
+        </svg>
+      </a>
+      <a
         href={alternatePath}
+        data-lang-switch={lang === "sk" ? "en" : "sk"}
         class="px-3 py-1.5 rounded-md text-xs font-mono font-medium text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100/80 dark:hover:bg-white/[0.05] transition-all"
         title={t("lang.switch")}
       >
@@ -209,11 +220,23 @@ const currentPath = Astro.url.pathname;
     }
   </nav>
 
-  <!-- Bottom: lang switch -->
-  <div class="px-5 pb-28 pt-4 border-t border-white/[0.06] shrink-0">
+  <!-- Bottom: RSS + lang switch -->
+  <div class="px-5 pb-28 pt-4 border-t border-white/[0.06] shrink-0 flex gap-3">
+    <a
+      href={lang === "en" ? "/en/rss.xml" : "/rss.xml"}
+      class="fab-nav-link flex items-center justify-center gap-2 py-3.5 px-4 rounded-xl border border-white/10 text-sm font-mono font-medium text-zinc-400 hover:text-white hover:border-white/20 transition-all active:scale-[0.98]"
+      title="RSS Feed"
+    >
+      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+        <circle cx="6.18" cy="17.82" r="2.18"></circle>
+        <path d="M4 4.44v2.83c7.03 0 12.73 5.7 12.73 12.73h2.83c0-8.59-6.97-15.56-15.56-15.56zm0 5.66v2.83c3.9 0 7.07 3.17 7.07 7.07h2.83c0-5.47-4.43-9.9-9.9-9.9z"></path>
+      </svg>
+      RSS
+    </a>
     <a
       href={alternatePath}
-      class="fab-nav-link flex items-center justify-center gap-2 w-full py-3.5 rounded-xl border border-white/10 text-sm font-mono font-medium text-zinc-400 hover:text-white hover:border-white/20 transition-all active:scale-[0.98]"
+      data-lang-switch={lang === "sk" ? "en" : "sk"}
+      class="fab-nav-link flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl border border-white/10 text-sm font-mono font-medium text-zinc-400 hover:text-white hover:border-white/20 transition-all active:scale-[0.98]"
     >
       <svg
         class="w-3.5 h-3.5"
@@ -323,5 +346,13 @@ const currentPath = Astro.url.pathname;
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && isOpen) closeMenu();
+  });
+
+  // Remember manual language choice
+  document.querySelectorAll("[data-lang-switch]").forEach((link) => {
+    link.addEventListener("click", () => {
+      const target = (link as HTMLElement).dataset.langSwitch;
+      if (target) localStorage.setItem("langChosen", target);
+    });
   });
 </script>
