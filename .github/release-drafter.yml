@@ -2,17 +2,21 @@ name-template: 'v$RESOLVED_VERSION'
 tag-template: 'v$RESOLVED_VERSION'
 
 categories:
-  - title: 'Features'
+  - title: '🚀 Features'
     labels:
       - 'feat'
-  - title: 'Bug Fixes'
+  - title: '🐛 Bug Fixes'
     labels:
       - 'fix'
-  - title: 'Maintenance'
+  - title: '🔧 Maintenance'
     labels:
       - 'chore'
       - 'refactor'
+  - title: '📝 Documentation'
+    labels:
       - 'docs'
+  - title: '🧪 Tests'
+    labels:
       - 'test'
 
 autolabeler:
@@ -51,10 +55,14 @@ version-resolver:
       - 'test'
   default: patch
 
-change-template: '- $TITLE (#$NUMBER)'
+change-template: '- $TITLE (#$NUMBER) @$AUTHOR'
 change-title-escapes: '\<*_&'
+exclude-labels:
+  - 'skip-changelog'
 
 template: |
-  ## What's Changed
+  ## 🎉 What's Changed
 
   $CHANGES
+
+  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
