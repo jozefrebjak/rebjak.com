@@ -4,7 +4,7 @@ import { getCollection, render } from "astro:content";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 
 export async function getStaticPaths() {
-  const posts = await getCollection("blogEn", ({ data }) => !data.draft);
+  const posts = await getCollection("blogEn", ({ data }) => !data.draft || import.meta.env.DEV);
   return posts.map((post) => ({
     params: { slug: post.id.replace(/\.md$/, "") },
     props: { post },
@@ -13,6 +13,24 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props;
 const { Content } = await render(post);
+const slug = post.id.replace(/\.md$/, "");
+const ogImage = new URL(`/en/blog/og/${slug}.png`, Astro.site).href;
+
+const canonicalUrl = new URL(`/en/blog/${slug}`, Astro.site).href;
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: post.data.title,
+  description: post.data.description,
+  image: ogImage,
+  datePublished: post.data.pubDate.toISOString(),
+  ...(post.data.updatedDate && { dateModified: post.data.updatedDate.toISOString() }),
+  author: { "@type": "Person", name: "Jozef Rebjak", url: "https://rebjak.com" },
+  publisher: { "@type": "Person", name: "Jozef Rebjak" },
+  url: canonicalUrl,
+  inLanguage: "en",
+  keywords: post.data.tags,
+};
 
 const pubDateFormatted = post.data.pubDate.toLocaleDateString("en-US", {
   year: "numeric",
@@ -36,7 +54,9 @@ function readingTime(body: string): number {
 <BaseLayout
   title={`${post.data.title} · ${pubDateFormatted}`}
   description={post.data.description}
+  ogImage={ogImage}
   alternatePath="/blog"
+  jsonLd={jsonLd}
 >
   <article class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
     <a
@@ -62,6 +82,7 @@ function readingTime(body: string): number {
       <h1
         class="text-3xl sm:text-4xl font-bold text-zinc-900 dark:text-zinc-100 leading-tight mb-4"
       >
+        {post.data.draft && <span class="inline-block px-2 py-0.5 text-xs font-bold uppercase tracking-wider bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 rounded mr-2 align-middle">Draft</span>}
         {post.data.title}
       </h1>
       <p class="text-zinc-600 dark:text-zinc-400 text-lg mb-4">

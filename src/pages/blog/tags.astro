@@ -5,7 +5,7 @@ import { useTranslations, pluralize } from "../../i18n/translations";
 
 const t = useTranslations("sk");
 
-const allPosts = await getCollection("blogSk", ({ data }) => !data.draft);
+const allPosts = await getCollection("blogSk", ({ data }) => !data.draft || import.meta.env.DEV);
 const tagCounts = allPosts
   .flatMap((p) => p.data.tags)
   .reduce(
@@ -22,6 +22,7 @@ const maxCount = Math.max(...tags.map(([, c]) => c));
 <BaseLayout
   title={`${t("blog.allTags")} · ${t("blog.title")}`}
   description={t("blog.allTags")}
+  noindex
 >
   <div class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
     <a
