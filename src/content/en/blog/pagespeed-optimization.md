@@ -1,6 +1,6 @@
 ---
-title: 'PageSpeed optimization — fonts, contrast and trailing slash'
-description: 'Lighthouse showed Performance 87 and Accessibility 94. I fixed render-blocking fonts, insufficient color contrast and an unnecessary redirect. Building in public, part four.'
+title: 'PageSpeed optimization and GitHub Pages limitations'
+description: 'Lighthouse showed Performance 87 on mobile. Self-hosted fonts, WCAG contrast, trailing slash — and why GitHub Pages cache headers prevent reaching 100. Building in public, part four.'
 pubDate: 2026-03-08T10:00:00
 tags: ['astro', 'performance', 'building-in-public']
 draft: true
@@ -19,11 +19,12 @@ After running [PageSpeed Insights](https://pagespeed.web.dev/) on `rebjak.com/en
 | Best Practices | 100 |
 | SEO | 100 |
 
-Three main issues:
+Four main issues:
 
 1. **Render-blocking Google Fonts** — ~2000 ms savings available
 2. **Insufficient color contrast** — WCAG AA failure
 3. **Trailing slash redirect** — `/en` → `/en/` costs ~925 ms
+4. **External font requests** — DNS + TLS handshake on every visit
 
 ## 1. Render-blocking fonts
 
@@ -33,7 +34,7 @@ A standard `<link rel="stylesheet">` for Google Fonts blocks rendering of the en
 
 ### Solution
 
-I replaced the render-blocking link with a non-blocking `preload` + `onload` swap pattern:
+First step — I replaced the render-blocking link with a non-blocking `preload` + `onload` swap pattern:
 
 ```html
 <!-- Before: render-blocking -->
@@ -65,6 +66,8 @@ How it works:
 **preconnect** opens a TCP + TLS connection to the font server before the browser even knows it will need the fonts. This saves ~100-200 ms on the first request.
 
 </div>
+
+This fixed the render-blocking issue, but fonts were still being downloaded from external servers. I'll come back to that in section 4.
 
 ## 2. Color contrast (WCAG)
 
@@ -152,9 +155,74 @@ Same for dynamic links:
 
 In total, I updated links across 12 files — homepages, blog lists, tag pages, slug pages, and the Header component navigation.
 
-## Result
+## 4. Self-hosting fonts
 
-Lighthouse CLI on a local build after all fixes:
+### Problem
+
+Even after the preload optimization, fonts were still being downloaded from `fonts.googleapis.com` and `fonts.gstatic.com`. Each external request means:
+
+- **DNS lookup** — the browser needs to resolve the domain to an IP address
+- **TCP + TLS handshake** — a new connection for each server
+- **No control over caching** — Google sets its own cache headers
+
+On mobile (simulated slow 4G with 150 ms RTT), this adds hundreds of milliseconds on every first load.
+
+Google Fonts serves Inter as a variable font weighing **230 KB** and JetBrains Mono at **56 KB** — totaling **286 KB** over external servers.
+
+### Solution
+
+I downloaded the fonts and subsetted them using `pyftsubset` (from the `fonttools` library) to Latin + Latin Extended-A (U+0000-017F) — covering both English and Slovak (č, š, ž, ľ, ď, ť, ň and more).
+
+```bash
+pyftsubset inter-latin.woff2 \
+  --output-file=inter-latin.woff2 \
+  --flavor=woff2 \
+  --layout-features='kern,liga,clig,calt' \
+  --unicodes="U+0000-017F,U+2000-206F,U+20AC"
+```
+
+The resulting sizes:
+
+| Font | Before (Google) | After (subset) | Savings |
+|------|----------------|----------------|---------|
+| Inter | 230 KB | 45 KB | –80% |
+| JetBrains Mono | 56 KB | 32 KB | –43% |
+| **Total** | **286 KB** | **77 KB** | **–73%** |
+
+In `global.css`, I added `@font-face` declarations:
+
+```css
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400 700;
+    font-display: swap;
+    src: url('/fonts/inter-latin.woff2') format('woff2');
+    unicode-range: U+0000-017F, U+2000-206F, U+20AC;
+}
+```
+
+And in `BaseLayout.astro`, I replaced all Google Fonts links with simple `preload` declarations:
+
+```html
+<!-- Before: 4 links to external servers -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?..." onload="..." />
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?..." /></noscript>
+
+<!-- After: 2 preload links to own server -->
+<link rel="preload" as="font" type="font/woff2" href="/fonts/inter-latin.woff2" crossorigin />
+<link rel="preload" as="font" type="font/woff2" href="/fonts/jetbrains-mono-latin.woff2" crossorigin />
+```
+
+<div class="callout tip">
+
+**font-display: swap** shows text immediately with a fallback font (system-ui) and switches to Inter/JetBrains Mono once loaded. The user sees content right away — the font swap happens without noticeable flashing.
+
+</div>
+
+## Result
 
 <details>
 <summary>How to test locally</summary>
@@ -172,6 +240,8 @@ npx lighthouse http://localhost:4444/en/ \
 
 </details>
 
+### Local (localhost)
+
 | Page | Performance | Accessibility | Best Practices | SEO |
 |------|-------------|---------------|----------------|-----|
 | `/` (SK) | 100 | 100 | 100 | 100 |
@@ -179,7 +249,62 @@ npx lighthouse http://localhost:4444/en/ \
 | `/blog/` | 100 | 100 | 100 | 100 |
 | `/en/blog/` | 100 | 100 | 100 | 100 |
 
-From 87/94 to **100/100** — no compromises, just properly configured colors, fonts, and URLs.
+### Production (GitHub Pages)
+
+A local 100 isn't the full story. Lighthouse on the production server tests with real network latency — and the mobile preset simulates **slow 4G** (1.6 Mbps, 150 ms RTT).
+
+| Preset | Performance | Accessibility | Best Practices | SEO |
+|--------|-------------|---------------|----------------|-----|
+| Desktop | 97 | 100 | 100 | 100 |
+| Mobile | 87 | 100 | 100 | 100 |
+
+Accessibility, SEO and Best Practices are at **100** — contrast, trailing slash and font fixes work. Mobile Performance drops due to factors beyond my control.
+
+## Why mobile isn't 100 in production
+
+The Lighthouse mobile preset isn't just a test — it simulates real-world conditions that many people face on slower mobile connections. And there are plenty of them: according to Google's [Think with Google](https://www.thinkwithgoogle.com/marketing-strategies/app-and-mobile/mobile-page-speed-new-industry-benchmarks/), **53% of mobile visitors abandon a site that takes more than 3 seconds to load**.
+
+### What exactly slows it down
+
+| Metric | Local | Production (mobile) |
+|--------|-------|-------------------|
+| First Contentful Paint | ~0.5 s | 3.0 s |
+| Largest Contentful Paint | ~0.5 s | 3.0 s |
+| Speed Index | ~0.5 s | 4.4 s |
+| Total Blocking Time | 0 ms | 0 ms |
+| Cumulative Layout Shift | 0 | 0 |
+
+The site isn't "slow" in the traditional sense — TBT 0 and CLS 0 mean it's immediately functional once loaded and nothing jumps around. The issue is time-to-first-paint on a slow network.
+
+### GitHub Pages limitations
+
+GitHub Pages has hard limits you can't work around:
+
+**Cache headers** — GitHub Pages sets `Cache-Control: max-age=600` (10 minutes) for **all** static assets. Even for files with hashed names (e.g. `_page_.DYzwY8gP.css`) that should ideally have `max-age=31536000` (1 year) with the `immutable` flag. You have no control over this — GitHub Pages doesn't support custom cache headers.
+
+**No edge caching** — content is served from a single region. CDNs like Cloudflare or Vercel have edge nodes worldwide and serve from the closest server.
+
+**No compression control** — you can't configure Brotli compression instead of gzip, or optimize response headers.
+
+### Optimization summary
+
+| Optimization | Impact | Status |
+|-------------|--------|--------|
+| Self-hosting fonts | Eliminates external requests | Done |
+| Font subsetting | –73% font size (286 → 77 KB) | Done |
+| Trailing slash fix | Eliminates 301 redirect (~925 ms) | Done |
+| Render-blocking fonts | Non-blocking preload pattern | Done |
+| WCAG contrast | 100% Accessibility | Done |
+| CDN (Cloudflare/Vercel) | Edge caching, longer cache, Brotli | Consider |
+| Inline critical CSS | Eliminates render-blocking CSS | Consider |
+
+<div class="callout note">
+
+For a static site on GitHub Pages, **Performance 87 on mobile** is a solid result. What matters is what the test actually tells us: the page takes 3 seconds to load on a slow network — but once loaded, it's immediately fully functional. No JavaScript blocks interaction, no layout shift.
+
+If the production hosting moved to a CDN with edge caching and longer cache headers, Performance would approach 100 on mobile as well.
+
+</div>
 
 ## What's next?
 
