@@ -70,29 +70,44 @@ Ako to funguje:
 
 ### Problém
 
-Lighthouse označil viacero textových elementov, kde farba textu nemala dostatočný kontrast voči pozadiu. WCAG AA vyžaduje minimálne 4.5:1 pre normálny text a 3:1 pre veľký text.
+Lighthouse označil viacero textových elementov, kde farba textu nemala dostatočný kontrast voči pozadiu. WCAG AA vyžaduje minimálne **4.5:1** pre normálny text a **3:1** pre veľký text.
 
-Problematické triedy:
+Prvá iterácia opravila najhoršie prípady, ale Lighthouse CLI test odhalil, že `zinc-500` (`#71717a`) na tmavom pozadí stále nedosahuje 4.5:1. Rovnako `zinc-400` (`#a1a1aa`) na bielom pozadí má len 2.56:1.
 
-- `text-zinc-400` na bielom pozadí — kontrast ~3.3:1 (zlyhanie)
-- `text-zinc-300` na bielom pozadí — kontrast ~2.2:1 (zlyhanie)
-- `text-zinc-500 dark:text-zinc-500` — v light mode OK, ale na hranici
+### Kontrastné pomery Tailwind zinc škály
+
+| Farba | Hex | vs biela | vs tmavé bg (~#0f1319) |
+|-------|-----|----------|------------------------|
+| zinc-300 | `#d4d4d8` | 1.48:1 | — |
+| zinc-400 | `#a1a1aa` | 2.56:1 | 5.63:1 |
+| zinc-500 | `#71717a` | 4.83:1 | 3.97:1 |
+| zinc-600 | `#52525b` | 7.73:1 | — |
 
 ### Riešenie
 
-Systematicky som prešiel homepage (SK aj EN), footer a navigáciu:
+Správny vzorec pre sekundárny text: **`text-zinc-500 dark:text-zinc-400`** — obe hodnoty spĺňajú 4.5:1 vo svojom režime.
 
 | Element | Pred | Po |
 |---------|------|-----|
-| Stats labels | `text-zinc-400 dark:text-zinc-600` | `text-zinc-500 dark:text-zinc-500` |
-| Nav card labels | `text-zinc-400 dark:text-zinc-600` | `text-zinc-500 dark:text-zinc-500` |
-| Nav card description | `text-zinc-500 dark:text-zinc-500` | `text-zinc-600 dark:text-zinc-400` |
-| "open →" text | `text-zinc-300 dark:text-zinc-700` | `text-zinc-400 dark:text-zinc-600` |
-| Footer text | `text-zinc-400 dark:text-zinc-600` | `text-zinc-500 dark:text-zinc-500` |
-| Terminal title bar | `text-zinc-400 dark:text-zinc-600` | `text-zinc-500 dark:text-zinc-500` |
-| Hero description | `text-zinc-500 dark:text-zinc-500` | `text-zinc-600 dark:text-zinc-400` |
+| Stats labels | `text-zinc-400 dark:text-zinc-600` | `text-zinc-500 dark:text-zinc-400` |
+| Nav card labels | `text-zinc-400 dark:text-zinc-600` | `text-zinc-500 dark:text-zinc-400` |
+| "open →" text | `text-zinc-300 dark:text-zinc-700` | `text-zinc-500 dark:text-zinc-400` |
+| Footer text + linky | `text-zinc-400 dark:text-zinc-600` | `text-zinc-500 dark:text-zinc-400` |
+| Terminal title bar | `text-zinc-400 dark:text-zinc-600` | `text-zinc-500 dark:text-zinc-400` |
+| CV section headers | `text-zinc-400 dark:text-zinc-500` | `text-zinc-500 dark:text-zinc-400` |
+| Blog tag counts | `text-zinc-400 dark:text-zinc-500` | `text-zinc-500 dark:text-zinc-400` |
 
-Princíp: v light mode posunúť text k tmavším odtieňom (zinc-500/600), v dark mode k svetlejším (zinc-400/500).
+Pre terminálový výstup na homepage som nahradil inline `color:#64748b` (slate-500, kontrast 3.91:1 na tmavom) za CSS class s dark/light prepínaním:
+
+```css
+/* dark mode default */
+.term-out { color: #94a3b8; }  /* slate-400 — 7.26:1 na tmavom */
+
+/* light mode override */
+:root:not(.dark) .term-out { color: #475569; }  /* slate-600 — 7.58:1 na bielom */
+```
+
+Celkovo opravených **12 súborov** — obidve homepage, Header, Footer, oba CV, blog listing SK/EN, blog tags SK/EN.
 
 ## 3. Trailing slash redirect
 
@@ -139,11 +154,32 @@ Celkovo som opravil linky v 12 súboroch — homepage, blog listy, tag stránky,
 
 ## Výsledok
 
-Všetky tri problémy opravené v jednom PR:
+Lighthouse CLI na lokálnom builde po všetkých opravách:
 
-- **Fonty**: Stránka sa renderuje okamžite, fonty sa načítajú na pozadí
-- **Kontrast**: WCAG AA splnený pre všetky textové elementy
-- **Redirect**: Žiadny zbytočný 301, priame načítanie stránky
+<details>
+<summary>Ako otestovať lokálne</summary>
+
+```bash
+# build + serve
+npx astro build && npx serve dist -l 4444
+
+# v druhom termináli
+npx lighthouse http://localhost:4444/en/ \
+  --chrome-flags="--headless=new" \
+  --output=html \
+  --output-path=./lighthouse-report.html
+```
+
+</details>
+
+| Stránka | Performance | Accessibility | Best Practices | SEO |
+|---------|-------------|---------------|----------------|-----|
+| `/` (SK) | 100 | 100 | 100 | 100 |
+| `/en/` (EN) | 100 | 100 | 100 | 100 |
+| `/blog/` | 100 | 100 | 100 | 100 |
+| `/en/blog/` | 100 | 100 | 100 | 100 |
+
+Zo 87/94 na **100/100** — žiadne kompromisy, len správne nastavené farby, fonty a URL.
 
 ## Čo ďalej?
 

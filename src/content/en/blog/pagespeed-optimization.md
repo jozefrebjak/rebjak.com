@@ -70,29 +70,44 @@ How it works:
 
 ### Problem
 
-Lighthouse flagged several text elements where the text color didn't have sufficient contrast against the background. WCAG AA requires at least 4.5:1 for normal text and 3:1 for large text.
+Lighthouse flagged several text elements where the text color didn't have sufficient contrast against the background. WCAG AA requires at least **4.5:1** for normal text and **3:1** for large text.
 
-Problematic classes:
+The first iteration fixed the worst cases, but a Lighthouse CLI test revealed that `zinc-500` (`#71717a`) on dark backgrounds still didn't reach 4.5:1. Similarly, `zinc-400` (`#a1a1aa`) on white has only 2.56:1.
 
-- `text-zinc-400` on white background — contrast ~3.3:1 (fail)
-- `text-zinc-300` on white background — contrast ~2.2:1 (fail)
-- `text-zinc-500 dark:text-zinc-500` — OK in light mode, but borderline
+### Tailwind zinc scale contrast ratios
+
+| Color | Hex | vs white | vs dark bg (~#0f1319) |
+|-------|-----|----------|----------------------|
+| zinc-300 | `#d4d4d8` | 1.48:1 | — |
+| zinc-400 | `#a1a1aa` | 2.56:1 | 5.63:1 |
+| zinc-500 | `#71717a` | 4.83:1 | 3.97:1 |
+| zinc-600 | `#52525b` | 7.73:1 | — |
 
 ### Solution
 
-I systematically went through the homepage (SK and EN), footer, and navigation:
+The correct pattern for secondary text: **`text-zinc-500 dark:text-zinc-400`** — both values meet 4.5:1 in their respective modes.
 
 | Element | Before | After |
 |---------|--------|-------|
-| Stats labels | `text-zinc-400 dark:text-zinc-600` | `text-zinc-500 dark:text-zinc-500` |
-| Nav card labels | `text-zinc-400 dark:text-zinc-600` | `text-zinc-500 dark:text-zinc-500` |
-| Nav card description | `text-zinc-500 dark:text-zinc-500` | `text-zinc-600 dark:text-zinc-400` |
-| "open →" text | `text-zinc-300 dark:text-zinc-700` | `text-zinc-400 dark:text-zinc-600` |
-| Footer text | `text-zinc-400 dark:text-zinc-600` | `text-zinc-500 dark:text-zinc-500` |
-| Terminal title bar | `text-zinc-400 dark:text-zinc-600` | `text-zinc-500 dark:text-zinc-500` |
-| Hero description | `text-zinc-500 dark:text-zinc-500` | `text-zinc-600 dark:text-zinc-400` |
+| Stats labels | `text-zinc-400 dark:text-zinc-600` | `text-zinc-500 dark:text-zinc-400` |
+| Nav card labels | `text-zinc-400 dark:text-zinc-600` | `text-zinc-500 dark:text-zinc-400` |
+| "open →" text | `text-zinc-300 dark:text-zinc-700` | `text-zinc-500 dark:text-zinc-400` |
+| Footer text + links | `text-zinc-400 dark:text-zinc-600` | `text-zinc-500 dark:text-zinc-400` |
+| Terminal title bar | `text-zinc-400 dark:text-zinc-600` | `text-zinc-500 dark:text-zinc-400` |
+| CV section headers | `text-zinc-400 dark:text-zinc-500` | `text-zinc-500 dark:text-zinc-400` |
+| Blog tag counts | `text-zinc-400 dark:text-zinc-500` | `text-zinc-500 dark:text-zinc-400` |
 
-The principle: in light mode, shift text toward darker shades (zinc-500/600); in dark mode, toward lighter ones (zinc-400/500).
+For the terminal output on the homepage, I replaced inline `color:#64748b` (slate-500, 3.91:1 contrast on dark) with a CSS class that switches between dark and light modes:
+
+```css
+/* dark mode default */
+.term-out { color: #94a3b8; }  /* slate-400 — 7.26:1 on dark */
+
+/* light mode override */
+:root:not(.dark) .term-out { color: #475569; }  /* slate-600 — 7.58:1 on white */
+```
+
+In total, **12 files** were updated — both homepages, Header, Footer, both CVs, blog listings (SK/EN), and blog tags (SK/EN).
 
 ## 3. Trailing slash redirect
 
@@ -139,11 +154,32 @@ In total, I updated links across 12 files — homepages, blog lists, tag pages, 
 
 ## Result
 
-All three issues fixed in a single PR:
+Lighthouse CLI on a local build after all fixes:
 
-- **Fonts**: Page renders immediately, fonts load in the background
-- **Contrast**: WCAG AA met for all text elements
-- **Redirect**: No unnecessary 301, direct page load
+<details>
+<summary>How to test locally</summary>
+
+```bash
+# build + serve
+npx astro build && npx serve dist -l 4444
+
+# in a second terminal
+npx lighthouse http://localhost:4444/en/ \
+  --chrome-flags="--headless=new" \
+  --output=html \
+  --output-path=./lighthouse-report.html
+```
+
+</details>
+
+| Page | Performance | Accessibility | Best Practices | SEO |
+|------|-------------|---------------|----------------|-----|
+| `/` (SK) | 100 | 100 | 100 | 100 |
+| `/en/` (EN) | 100 | 100 | 100 | 100 |
+| `/blog/` | 100 | 100 | 100 | 100 |
+| `/en/blog/` | 100 | 100 | 100 | 100 |
+
+From 87/94 to **100/100** — no compromises, just properly configured colors, fonts, and URLs.
 
 ## What's next?
 
