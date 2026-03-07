@@ -253,30 +253,39 @@ npx lighthouse http://localhost:4444/en/ \
 
 A local 100 isn't the full story. Lighthouse on the production server tests with real network latency — and the mobile preset simulates **slow 4G** (1.6 Mbps, 150 ms RTT).
 
+Before self-hosting fonts, production looked like this:
+
 | Preset | Performance | Accessibility | Best Practices | SEO |
 |--------|-------------|---------------|----------------|-----|
 | Desktop | 97 | 100 | 100 | 100 |
 | Mobile | 87 | 100 | 100 | 100 |
 
-Accessibility, SEO and Best Practices are at **100** — contrast, trailing slash and font fixes work. Mobile Performance drops due to factors beyond my control.
+After self-hosting and subsetting:
+
+| Preset | Performance | Accessibility | Best Practices | SEO |
+|--------|-------------|---------------|----------------|-----|
+| Desktop | **100** | 100 | 100 | 100 |
+| Mobile | **94–95** | 100 | 100 | 100 |
+
+Desktop is at **100**. Mobile jumped from 87 to **94–95** — FCP dropped from 3.0 s to 1.0 s. That's a massive improvement, but still not 100. Why?
 
 ## Why mobile isn't 100 in production
 
 The Lighthouse mobile preset isn't just a test — it simulates real-world conditions that many people face on slower mobile connections. And there are plenty of them: according to Google's [Think with Google](https://www.thinkwithgoogle.com/marketing-strategies/app-and-mobile/mobile-page-speed-new-industry-benchmarks/), **53% of mobile visitors abandon a site that takes more than 3 seconds to load**.
 
-### What exactly slows it down
+### What we managed to optimize
 
-| Metric | Local | Production (mobile) |
-|--------|-------|-------------------|
-| First Contentful Paint | ~0.5 s | 3.0 s |
-| Largest Contentful Paint | ~0.5 s | 3.0 s |
-| Speed Index | ~0.5 s | 4.4 s |
-| Total Blocking Time | 0 ms | 0 ms |
-| Cumulative Layout Shift | 0 | 0 |
+| Metric | Before | After | Change |
+|--------|--------|-------|--------|
+| First Contentful Paint | 3.0 s | **1.0 s** | –67% |
+| Largest Contentful Paint | 3.0 s | **2.7 s** | –10% |
+| Speed Index | 4.4 s | **3.7 s** | –16% |
+| Total Blocking Time | 0 ms | 0 ms | — |
+| Cumulative Layout Shift | 0 | 0 | — |
 
-The site isn't "slow" in the traditional sense — TBT 0 and CLS 0 mean it's immediately functional once loaded and nothing jumps around. The issue is time-to-first-paint on a slow network.
+FCP dropped to a third of the original — that directly means the user sees content almost instantly. TBT 0 and CLS 0 mean the page is immediately functional once loaded and nothing jumps around.
 
-### GitHub Pages limitations
+### What still holds it back: GitHub Pages limitations
 
 GitHub Pages has hard limits you can't work around:
 
@@ -286,23 +295,25 @@ GitHub Pages has hard limits you can't work around:
 
 **No compression control** — you can't configure Brotli compression instead of gzip, or optimize response headers.
 
+These are the factors costing the remaining 5–6 points. On localhost (zero latency) everything is 100/100 — the production penalty is purely network-related.
+
 ### Optimization summary
 
 | Optimization | Impact | Status |
 |-------------|--------|--------|
-| Self-hosting fonts | Eliminates external requests | Done |
+| Self-hosting fonts | Eliminates 3 external requests | Done |
 | Font subsetting | –73% font size (286 → 77 KB) | Done |
 | Trailing slash fix | Eliminates 301 redirect (~925 ms) | Done |
-| Render-blocking fonts | Non-blocking preload pattern | Done |
-| WCAG contrast | 100% Accessibility | Done |
+| Non-blocking font loading | Eliminates render-blocking CSS | Done |
+| WCAG contrast (dark + light) | 100% Accessibility | Done |
 | CDN (Cloudflare/Vercel) | Edge caching, longer cache, Brotli | Consider |
-| Inline critical CSS | Eliminates render-blocking CSS | Consider |
+| Inline critical CSS | Eliminates render-blocking Astro CSS | Consider |
 
 <div class="callout note">
 
-For a static site on GitHub Pages, **Performance 87 on mobile** is a solid result. What matters is what the test actually tells us: the page takes 3 seconds to load on a slow network — but once loaded, it's immediately fully functional. No JavaScript blocks interaction, no layout shift.
+For a static site on GitHub Pages, **Performance 94–95 on mobile** is a very solid result. The page loads in ~1 second to first paint and ~2.7 s fully on simulated slow 4G. No JavaScript blocks interaction, no layout shift.
 
-If the production hosting moved to a CDN with edge caching and longer cache headers, Performance would approach 100 on mobile as well.
+The last 5–6 points to 100 would come from a CDN with edge caching and longer cache headers — that's an infrastructure decision, not a code one.
 
 </div>
 

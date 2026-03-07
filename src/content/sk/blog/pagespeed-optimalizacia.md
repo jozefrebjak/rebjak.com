@@ -253,30 +253,39 @@ npx lighthouse http://localhost:4444/en/ \
 
 Lokálne 100 nie je celý príbeh. Lighthouse na produkčnom serveri testuje s reálnou sieťovou latenciou — a mobile preset simuluje **pomalé 4G** (1.6 Mbps, 150 ms RTT).
 
+Pred self-hostingom fontov vyzerala produkcia takto:
+
 | Preset | Performance | Accessibility | Best Practices | SEO |
 |--------|-------------|---------------|----------------|-----|
 | Desktop | 97 | 100 | 100 | 100 |
 | Mobile | 87 | 100 | 100 | 100 |
 
-Accessibility, SEO a Best Practices sú na **100** — kontrast, trailing slash a font fixy fungujú. Performance na mobile klesá kvôli faktorom mimo môj dosah.
+Po self-hostingu a subsettingu:
+
+| Preset | Performance | Accessibility | Best Practices | SEO |
+|--------|-------------|---------------|----------------|-----|
+| Desktop | **100** | 100 | 100 | 100 |
+| Mobile | **94–95** | 100 | 100 | 100 |
+
+Desktop je na **100**. Mobile skočil z 87 na **94–95** — FCP klesol z 3.0 s na 1.0 s. To je obrovský rozdiel, ale stále nie 100. Prečo?
 
 ## Prečo mobile nie je 100 na produkcii
 
 Lighthouse mobile preset nie je len test — simuluje reálne podmienky, s akými sa stretávajú ľudia na pomalšom mobilnom internete. A nie je ich málo: podľa Google [Think with Google](https://www.thinkwithgoogle.com/marketing-strategies/app-and-mobile/mobile-page-speed-new-industry-benchmarks/) **53% mobilných návštevníkov opustí stránku, ak sa načítava viac ako 3 sekundy**.
 
-### Čo presne spomaľuje
+### Čo sa podarilo optimalizovať
 
-| Metrika | Lokálne | Produkcia (mobile) |
-|---------|---------|-------------------|
-| First Contentful Paint | ~0.5 s | 3.0 s |
-| Largest Contentful Paint | ~0.5 s | 3.0 s |
-| Speed Index | ~0.5 s | 4.4 s |
-| Total Blocking Time | 0 ms | 0 ms |
-| Cumulative Layout Shift | 0 | 0 |
+| Metrika | Pred | Po | Zmena |
+|---------|------|-----|-------|
+| First Contentful Paint | 3.0 s | **1.0 s** | –67% |
+| Largest Contentful Paint | 3.0 s | **2.7 s** | –10% |
+| Speed Index | 4.4 s | **3.7 s** | –16% |
+| Total Blocking Time | 0 ms | 0 ms | — |
+| Cumulative Layout Shift | 0 | 0 | — |
 
-Stránka nie je "pomalá" v tradičnom zmysle — TBT 0 a CLS 0 znamenajú, že po načítaní je okamžite funkčná a nič neskáče. Problém je čas do prvého vykreslenia na pomalej sieti.
+FCP klesol na tretinu — to priamo znamená, že používateľ vidí obsah takmer okamžite. TBT 0 a CLS 0 znamenajú, že po načítaní je stránka okamžite funkčná a nič neskáče.
 
-### Limity GitHub Pages
+### Čo stále brzdí: limity GitHub Pages
 
 GitHub Pages má tvrdé limity, ktoré nedokážete obísť:
 
@@ -286,23 +295,25 @@ GitHub Pages má tvrdé limity, ktoré nedokážete obísť:
 
 **Žiadna kompresia kontrola** — nemôžete nastaviť Brotli kompresiu namiesto gzip, ani optimalizovať response hlavičky.
 
-### Čo by ešte pomohlo
+Toto sú faktory, ktoré stoja zvyšných 5–6 bodov. Na localhost (bez latencie) je všetko 100/100 — produkčná penalizácia je čisto sieťová.
+
+### Prehľad optimalizácií
 
 | Optimalizácia | Dopad | Stav |
 |---------------|-------|------|
-| Self-hosting fontov | Eliminuje externé requesty | Hotové |
+| Self-hosting fontov | Eliminuje 3 externé requesty | Hotové |
 | Font subsetting | –73% veľkosť fontov (286 → 77 KB) | Hotové |
 | Trailing slash fix | Eliminuje 301 redirect (~925 ms) | Hotové |
-| Render-blocking fonty | Non-blocking preload pattern | Hotové |
-| WCAG kontrast | 100% Accessibility | Hotové |
+| Non-blocking font loading | Eliminuje render-blocking CSS | Hotové |
+| WCAG kontrast (dark + light) | 100% Accessibility | Hotové |
 | CDN (Cloudflare/Vercel) | Edge caching, dlhší cache, Brotli | Zvážiť |
-| Inline critical CSS | Eliminuje render-blocking CSS | Zvážiť |
+| Inline critical CSS | Eliminuje render-blocking Astro CSS | Zvážiť |
 
 <div class="callout note">
 
-Pre statický web na GitHub Pages je **Performance 87 na mobile** dobrý výsledok. Dôležité je, čo ten test reálne hovorí: stránka sa na pomalej sieti načítava 3 sekundy — ale po načítaní je okamžite plne funkčná. Žiadny JavaScript neblokuje interakciu, žiadny layout shift.
+Pre statický web na GitHub Pages je **Performance 94–95 na mobile** veľmi dobrý výsledok. Stránka sa na simulovanom pomalom 4G načíta za ~1 sekundu do prvého vykreslenia a za ~2.7 s kompletne. Žiadny JavaScript neblokuje interakciu, žiadny layout shift.
 
-Ak by sa produkčný hosting presunul na CDN s edge cachingom a dlhšími cache hlavičkami, Performance by sa priblížil k 100 aj na mobile.
+Posledných 5–6 bodov k 100 by priniesol CDN s edge cachingom a dlhšími cache hlavičkami — to je však rozhodnutie o infraštruktúre, nie o kóde.
 
 </div>
 
