@@ -121,7 +121,7 @@ const isSk = lang === "sk";
             <span
               class="w-2 h-2 rounded-full bg-green-400/80 cursor-pointer hover:brightness-125 transition-all"
               title="Maximize"></span>
-            <span class="ml-2 text-zinc-500 dark:text-zinc-500 text-[10px]"
+            <span class="ml-2 text-zinc-500 dark:text-zinc-400 text-[10px]"
               >jrebjak@core-01 ~</span
             >
           </div>
@@ -155,7 +155,7 @@ const isSk = lang === "sk";
             >
               {value}
             </span>
-            <span class="text-xs font-mono text-zinc-500 dark:text-zinc-500">
+            <span class="text-xs font-mono text-zinc-500 dark:text-zinc-400">
               {label}
             </span>
           </div>
@@ -167,7 +167,7 @@ const isSk = lang === "sk";
   <!-- ── NAV CARDS ─────────────────────────────────────────── -->
   <section class="max-w-4xl mx-auto px-4 sm:px-6 pb-16 sm:pb-20">
     <p
-      class="text-xs font-mono text-zinc-500 dark:text-zinc-500 uppercase tracking-widest mb-4"
+      class="text-xs font-mono text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-4"
     >
       {isSk ? "— čo tu nájdeš" : "— what you'll find here"}
     </p>
@@ -208,7 +208,7 @@ const isSk = lang === "sk";
           >
             <div class="flex items-center gap-2 mb-3">
               <span class={`w-1.5 h-1.5 rounded-full ${dot}`} />
-              <span class="text-xs font-mono text-zinc-500 dark:text-zinc-500">
+              <span class="text-xs font-mono text-zinc-500 dark:text-zinc-400">
                 {label}://
               </span>
             </div>
@@ -218,7 +218,7 @@ const isSk = lang === "sk";
             <span class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed flex-1">
               {desc}
             </span>
-            <span class="mt-4 text-xs font-mono text-zinc-400 dark:text-zinc-600 group-hover:text-[var(--color-brand-dark)] transition-colors">
+            <span class="mt-4 text-xs font-mono text-zinc-500 dark:text-zinc-400 group-hover:text-[var(--color-brand-dark)] transition-colors">
               {isSk ? "otvoriť →" : "open →"}
             </span>
           </a>
@@ -266,7 +266,7 @@ const isSk = lang === "sk";
     color: #e2e8f0;
   }
   .term-out {
-    color: #64748b;
+    color: #94a3b8;
   }
   .term-ok {
     color: #34d39a;
@@ -281,7 +281,7 @@ const isSk = lang === "sk";
     color: #1e293b;
   }
   :root:not(.dark) .term-out {
-    color: #64748b;
+    color: #475569;
   }
   :root:not(.dark) .term-ok {
     color: #059669;
@@ -318,7 +318,7 @@ const isSk = lang === "sk";
     function prompt(dir: string, branch: string, dur?: string, exitOk = true) {
       const dirPart = `<span style="color:#29b6f6;font-weight:600"> ${dir}</span>`;
       const gitPart = `<span style="color:#a78bfa"> <span style="opacity:.6"></span> ${branch}</span>`;
-      const durPart = dur ? `<span style="color:#64748b"> ${dur}</span>` : "";
+      const durPart = dur ? `<span class="term-out"> ${dur}</span>` : "";
       const arrow = exitOk
         ? `<span style="color:#34d39a">❯</span>`
         : `<span style="color:#f87171">❯</span>`;

@@ -79,7 +79,7 @@ function isActive(href: string, exact = false) {
       <div class="w-px h-4 bg-zinc-200 dark:bg-white/10 mx-1"></div>
       <a
         href={lang === "en" ? "/en/rss.xml" : "/rss.xml"}
-        class="p-1.5 rounded-md text-zinc-400 dark:text-zinc-500 hover:text-[var(--color-brand-dark)] hover:bg-zinc-100/80 dark:hover:bg-white/[0.05] transition-all"
+        class="p-1.5 rounded-md text-zinc-500 dark:text-zinc-400 hover:text-[var(--color-brand-dark)] hover:bg-zinc-100/80 dark:hover:bg-white/[0.05] transition-all"
         title="RSS Feed"
       >
         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
@@ -207,7 +207,7 @@ function isActive(href: string, exact = false) {
             <span
               class:list={[
                 "text-2xl font-bold font-mono tracking-tight",
-                active ? "text-zinc-900 dark:text-white" : "text-zinc-400 dark:text-zinc-500",
+                active ? "text-zinc-900 dark:text-white" : "text-zinc-500 dark:text-zinc-400",
               ]}
             >
               {label}

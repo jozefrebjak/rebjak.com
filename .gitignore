@@ -32,3 +32,6 @@ Thumbs.db
 # misc
 *.local
 .cache/
+
+# lighthouse reports
+lighthouse-report*
