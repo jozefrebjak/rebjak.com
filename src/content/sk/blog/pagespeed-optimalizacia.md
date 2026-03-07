@@ -1,6 +1,6 @@
 ---
-title: 'PageSpeed optimalizácia — fonty, kontrast a trailing slash'
-description: 'Lighthouse ukázal Performance 87 a Accessibility 94. Opravil som render-blocking fonty, nedostatočný farebný kontrast a zbytočný redirect. Building in public, štvrtý diel.'
+title: 'PageSpeed optimalizácia a limity GitHub Pages'
+description: 'Lighthouse ukázal Performance 87 na mobile. Self-hosting fontov, WCAG kontrast, trailing slash — a prečo GitHub Pages cache hlavičky bránia dosiahnuť 100. Building in public, štvrtý diel.'
 pubDate: 2026-03-08T10:00:00
 tags: ['astro', 'performance', 'building-in-public']
 draft: true
@@ -19,11 +19,12 @@ Po spustení [PageSpeed Insights](https://pagespeed.web.dev/) na `rebjak.com/en`
 | Best Practices | 100 |
 | SEO | 100 |
 
-Tri hlavné problémy:
+Štyri hlavné problémy:
 
 1. **Render-blocking Google Fonts** — ušetriteľných ~2000 ms
 2. **Nedostatočný farebný kontrast** — WCAG AA zlyhanie
 3. **Trailing slash redirect** — `/en` → `/en/` stojí ~925 ms
+4. **Externé font requesty** — DNS + TLS handshake na každý návštev
 
 ## 1. Render-blocking fonty
 
@@ -33,7 +34,7 @@ Klasický `<link rel="stylesheet">` na Google Fonts blokuje renderovanie celej s
 
 ### Riešenie
 
-Nahradil som render-blocking link za non-blocking `preload` + `onload` swap pattern:
+Prvý krok — nahradil som render-blocking link za non-blocking `preload` + `onload` swap pattern:
 
 ```html
 <!-- Pred: render-blocking -->
@@ -65,6 +66,8 @@ Ako to funguje:
 **preconnect** otvára TCP + TLS spojenie na font server ešte pred tým, ako prehliadač vie, že bude potrebovať fonty. Ušetrí to ~100-200 ms pri prvom requeste.
 
 </div>
+
+Toto vyriešilo render-blocking problém, ale fonty sa stále sťahovali z externých serverov. K tomu sa vrátim v bode 4.
 
 ## 2. Farebný kontrast (WCAG)
 
@@ -152,9 +155,74 @@ To isté pre dynamické linky:
 
 Celkovo som opravil linky v 12 súboroch — homepage, blog listy, tag stránky, slug stránky a navigáciu v Header komponente.
 
-## Výsledok
+## 4. Self-hosting fontov
 
-Lighthouse CLI na lokálnom builde po všetkých opravách:
+### Problém
+
+Aj po preload optimalizácii sa fonty sťahovali z `fonts.googleapis.com` a `fonts.gstatic.com`. Každý externý request znamená:
+
+- **DNS lookup** — prehliadač musí preložiť doménu na IP adresu
+- **TCP + TLS handshake** — nové spojenie pre každý server
+- **Žiadna kontrola nad cachingom** — Google nastavuje vlastné cache hlavičky
+
+Na mobile (simulované pomalé 4G s 150 ms RTT) to pridáva stovky milisekúnd navyše pri každom prvom načítaní.
+
+Google Fonts servuje Inter ako variable font s veľkosťou **230 KB** a JetBrains Mono **56 KB** — spolu **286 KB** cez externé servery.
+
+### Riešenie
+
+Stiahol som fonty a subsettoval ich pomocou `pyftsubset` (z knižnice `fonttools`) na Latin + Latin Extended-A (U+0000-017F) — pokrýva angličtinu aj slovenčinu (č, š, ž, ľ, ď, ť, ň a ďalšie).
+
+```bash
+pyftsubset inter-latin.woff2 \
+  --output-file=inter-latin.woff2 \
+  --flavor=woff2 \
+  --layout-features='kern,liga,clig,calt' \
+  --unicodes="U+0000-017F,U+2000-206F,U+20AC"
+```
+
+Výsledné veľkosti:
+
+| Font | Pred (Google) | Po (subset) | Úspora |
+|------|--------------|-------------|--------|
+| Inter | 230 KB | 45 KB | –80% |
+| JetBrains Mono | 56 KB | 32 KB | –43% |
+| **Spolu** | **286 KB** | **77 KB** | **–73%** |
+
+V `global.css` som pridal `@font-face` deklarácie:
+
+```css
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400 700;
+    font-display: swap;
+    src: url('/fonts/inter-latin.woff2') format('woff2');
+    unicode-range: U+0000-017F, U+2000-206F, U+20AC;
+}
+```
+
+A v `BaseLayout.astro` nahradil všetky Google Fonts linky jednoduchou `preload` deklaráciou:
+
+```html
+<!-- Pred: 4 linky na externé servery -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?..." onload="..." />
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?..." /></noscript>
+
+<!-- Po: 2 preload linky na vlastný server -->
+<link rel="preload" as="font" type="font/woff2" href="/fonts/inter-latin.woff2" crossorigin />
+<link rel="preload" as="font" type="font/woff2" href="/fonts/jetbrains-mono-latin.woff2" crossorigin />
+```
+
+<div class="callout tip">
+
+**font-display: swap** zobrazí text okamžite s fallback fontom (system-ui) a prepne na Inter/JetBrains Mono po načítaní. Používateľ vidí obsah hneď — font sa vymení bez viditeľného bliknutia.
+
+</div>
+
+## Výsledok
 
 <details>
 <summary>Ako otestovať lokálne</summary>
@@ -172,6 +240,8 @@ npx lighthouse http://localhost:4444/en/ \
 
 </details>
 
+### Lokálne (localhost)
+
 | Stránka | Performance | Accessibility | Best Practices | SEO |
 |---------|-------------|---------------|----------------|-----|
 | `/` (SK) | 100 | 100 | 100 | 100 |
@@ -179,7 +249,62 @@ npx lighthouse http://localhost:4444/en/ \
 | `/blog/` | 100 | 100 | 100 | 100 |
 | `/en/blog/` | 100 | 100 | 100 | 100 |
 
-Zo 87/94 na **100/100** — žiadne kompromisy, len správne nastavené farby, fonty a URL.
+### Produkcia (GitHub Pages)
+
+Lokálne 100 nie je celý príbeh. Lighthouse na produkčnom serveri testuje s reálnou sieťovou latenciou — a mobile preset simuluje **pomalé 4G** (1.6 Mbps, 150 ms RTT).
+
+| Preset | Performance | Accessibility | Best Practices | SEO |
+|--------|-------------|---------------|----------------|-----|
+| Desktop | 97 | 100 | 100 | 100 |
+| Mobile | 87 | 100 | 100 | 100 |
+
+Accessibility, SEO a Best Practices sú na **100** — kontrast, trailing slash a font fixy fungujú. Performance na mobile klesá kvôli faktorom mimo môj dosah.
+
+## Prečo mobile nie je 100 na produkcii
+
+Lighthouse mobile preset nie je len test — simuluje reálne podmienky, s akými sa stretávajú ľudia na pomalšom mobilnom internete. A nie je ich málo: podľa Google [Think with Google](https://www.thinkwithgoogle.com/marketing-strategies/app-and-mobile/mobile-page-speed-new-industry-benchmarks/) **53% mobilných návštevníkov opustí stránku, ak sa načítava viac ako 3 sekundy**.
+
+### Čo presne spomaľuje
+
+| Metrika | Lokálne | Produkcia (mobile) |
+|---------|---------|-------------------|
+| First Contentful Paint | ~0.5 s | 3.0 s |
+| Largest Contentful Paint | ~0.5 s | 3.0 s |
+| Speed Index | ~0.5 s | 4.4 s |
+| Total Blocking Time | 0 ms | 0 ms |
+| Cumulative Layout Shift | 0 | 0 |
+
+Stránka nie je "pomalá" v tradičnom zmysle — TBT 0 a CLS 0 znamenajú, že po načítaní je okamžite funkčná a nič neskáče. Problém je čas do prvého vykreslenia na pomalej sieti.
+
+### Limity GitHub Pages
+
+GitHub Pages má tvrdé limity, ktoré nedokážete obísť:
+
+**Cache hlavičky** — GitHub Pages nastavuje `Cache-Control: max-age=600` (10 minút) pre **všetky** statické assety. Aj pre súbory s hash v názve (napr. `_page_.DYzwY8gP.css`), ktoré by ideálne mali `max-age=31536000` (1 rok) s `immutable` flagom. Na toto nemáte vplyv — GitHub Pages nepodporuje vlastné cache hlavičky.
+
+**Žiadne edge caching** — obsah sa servuje z jedného regiónu. CDN ako Cloudflare alebo Vercel majú edge nodes po celom svete a servujú z najbližšieho servera.
+
+**Žiadna kompresia kontrola** — nemôžete nastaviť Brotli kompresiu namiesto gzip, ani optimalizovať response hlavičky.
+
+### Čo by ešte pomohlo
+
+| Optimalizácia | Dopad | Stav |
+|---------------|-------|------|
+| Self-hosting fontov | Eliminuje externé requesty | Hotové |
+| Font subsetting | –73% veľkosť fontov (286 → 77 KB) | Hotové |
+| Trailing slash fix | Eliminuje 301 redirect (~925 ms) | Hotové |
+| Render-blocking fonty | Non-blocking preload pattern | Hotové |
+| WCAG kontrast | 100% Accessibility | Hotové |
+| CDN (Cloudflare/Vercel) | Edge caching, dlhší cache, Brotli | Zvážiť |
+| Inline critical CSS | Eliminuje render-blocking CSS | Zvážiť |
+
+<div class="callout note">
+
+Pre statický web na GitHub Pages je **Performance 87 na mobile** dobrý výsledok. Dôležité je, čo ten test reálne hovorí: stránka sa na pomalej sieti načítava 3 sekundy — ale po načítaní je okamžite plne funkčná. Žiadny JavaScript neblokuje interakciu, žiadny layout shift.
+
+Ak by sa produkčný hosting presunul na CDN s edge cachingom a dlhšími cache hlavičkami, Performance by sa priblížil k 100 aj na mobile.
+
+</div>
 
 ## Čo ďalej?
 
