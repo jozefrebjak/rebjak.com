@@ -15,6 +15,8 @@ Personal website of Jozef Rebjak — DevOps engineer.
 - Bilingual — SK (default) and EN (`/en`)
 - Dark mode without flash (inline script in `<head>`)
 - Blog via Astro Content Collections (markdown)
+- Blog pagination (Astro `paginate()`)
+- Tag system — per-tag filtering, tag cloud page, pill-style tags
 - Static output — zero backend
 
 ## Structure
@@ -27,8 +29,8 @@ src/
     en/blog/          English blog posts
   i18n/               Translations and routing helpers
   layouts/            BaseLayout
-  pages/              SK pages (/, /blog, /cv, /portfolio)
-  pages/en/           EN pages (/en, /en/blog, /en/cv, /en/portfolio)
+  pages/              SK pages (/, /blog, /blog/tags, /blog/tag/[tag], /cv, /portfolio)
+  pages/en/           EN pages (/en, /en/blog, /en/blog/tags, /en/blog/tag/[tag], /en/cv, /en/portfolio)
   styles/global.css
 .github/workflows/deploy.yml
 ```

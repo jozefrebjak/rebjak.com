@@ -1,0 +1,159 @@
+---
+import type { GetStaticPaths } from "astro";
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { useTranslations } from "../../i18n/translations";
+
+const t = useTranslations("sk");
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const allPosts = await getCollection("blogSk", ({ data }) => !data.draft);
+  const sorted = allPosts.sort(
+    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+  );
+  return paginate(sorted, { pageSize: 5 });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
+const allPosts = await getCollection("blogSk", ({ data }) => !data.draft);
+const tagCounts = allPosts
+  .flatMap((p) => p.data.tags)
+  .reduce(
+    (acc, tag) => {
+      acc[tag] = (acc[tag] ?? 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+const allTags = Object.keys(tagCounts).sort(
+  (a, b) => tagCounts[b] - tagCounts[a],
+);
+const visibleTags = allTags.slice(0, 5);
+
+function readingTime(body: string): number {
+  return Math.ceil(body.split(/\s+/).length / 200);
+}
+
+function formatDate(date: Date): string {
+  return date.toLocaleDateString("sk-SK", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+---
+
+<BaseLayout
+  title={page.currentPage > 1
+    ? `${t("blog.title")} · ${t("blog.page")} ${page.currentPage}`
+    : t("blog.title")}
+  description={t("blog.subtitle")}
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+    <div class="mb-10">
+      <h1 class="text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-3">
+        {t("blog.title")}
+      </h1>
+      <p class="text-zinc-600 dark:text-zinc-400">{t("blog.subtitle")}</p>
+    </div>
+
+    {
+      allTags.length > 0 && (
+        <div class="mb-10 flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+          {visibleTags.map((tag) => (
+            <a
+              href={`/blog/tag/${tag}`}
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border border-zinc-200 dark:border-zinc-700/80 bg-zinc-50 dark:bg-zinc-800/50 text-zinc-600 dark:text-zinc-400 hover:border-[var(--color-brand)] hover:text-[var(--color-brand)] dark:hover:border-[var(--color-brand-dark)] dark:hover:text-[var(--color-brand-dark)] transition-colors"
+            >
+              #{tag}
+              <span class="text-[10px] text-zinc-400 dark:text-zinc-500">
+                {tagCounts[tag]}
+              </span>
+            </a>
+          ))}
+          <a
+            href="/blog/tags"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border border-zinc-200 dark:border-zinc-700/80 text-zinc-500 dark:text-zinc-400 hover:border-[var(--color-brand)] hover:text-[var(--color-brand)] dark:hover:border-[var(--color-brand-dark)] dark:hover:text-[var(--color-brand-dark)] transition-colors"
+          >
+            {t("blog.allTags")} &rarr;
+          </a>
+        </div>
+      )
+    }
+
+    {
+      page.data.length === 0 ? (
+        <p class="text-zinc-500 dark:text-zinc-400">Zatial ziadne prispevky.</p>
+      ) : (
+        <div class="space-y-8">
+          {page.data.map((post) => {
+            const slug = `/blog/${post.id.replace(/\.md$/, "")}`;
+            const mins = readingTime(post.body ?? "");
+            return (
+              <article class="group">
+                <a href={slug} class="block">
+                  <time class="text-xs font-mono text-zinc-500 dark:text-zinc-400">
+                    {formatDate(post.data.pubDate)} &middot; {mins}{" "}
+                    {t("blog.minutes")}
+                  </time>
+                  <h2 class="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mt-1 mb-2 group-hover:text-[var(--color-brand)] dark:group-hover:text-[var(--color-brand-dark)] transition-colors">
+                    {post.data.title}
+                  </h2>
+                  <p class="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
+                    {post.data.description}
+                  </p>
+                </a>
+                {post.data.tags.length > 0 && (
+                  <div class="flex flex-wrap gap-1.5 mt-3">
+                    {post.data.tags.map((tag: string) => (
+                      <a
+                        href={`/blog/tag/${tag}`}
+                        class="px-2 py-0.5 rounded-full text-xs border border-zinc-200 dark:border-zinc-700/80 text-zinc-500 dark:text-zinc-400 hover:border-[var(--color-brand)] hover:text-[var(--color-brand)] dark:hover:border-[var(--color-brand-dark)] dark:hover:text-[var(--color-brand-dark)] transition-colors"
+                      >
+                        #{tag}
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </article>
+            );
+          })}
+        </div>
+      )
+    }
+
+    {
+      page.lastPage > 1 && (
+        <nav class="flex items-center justify-center gap-3 mt-14 pt-8 border-t border-zinc-200 dark:border-zinc-800">
+          {page.url.prev ? (
+            <a
+              href={page.url.prev}
+              class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium border border-zinc-200 dark:border-zinc-700/80 text-zinc-600 dark:text-zinc-400 hover:border-[var(--color-brand)] hover:text-[var(--color-brand)] dark:hover:border-[var(--color-brand-dark)] dark:hover:text-[var(--color-brand-dark)] transition-colors"
+            >
+              &larr; {t("blog.newer")}
+            </a>
+          ) : (
+            <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium border border-zinc-100 dark:border-zinc-800 text-zinc-300 dark:text-zinc-600 cursor-default">
+              &larr; {t("blog.newer")}
+            </span>
+          )}
+          <span class="text-sm font-mono tabular-nums text-zinc-400 dark:text-zinc-500">
+            {page.currentPage} / {page.lastPage}
+          </span>
+          {page.url.next ? (
+            <a
+              href={page.url.next}
+              class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium border border-zinc-200 dark:border-zinc-700/80 text-zinc-600 dark:text-zinc-400 hover:border-[var(--color-brand)] hover:text-[var(--color-brand)] dark:hover:border-[var(--color-brand-dark)] dark:hover:text-[var(--color-brand-dark)] transition-colors"
+            >
+              {t("blog.older")} &rarr;
+            </a>
+          ) : (
+            <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium border border-zinc-100 dark:border-zinc-800 text-zinc-300 dark:text-zinc-600 cursor-default">
+              {t("blog.older")} &rarr;
+            </span>
+          )}
+        </nav>
+      )
+    }
+  </div>
+</BaseLayout>

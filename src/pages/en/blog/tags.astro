@@ -1,0 +1,96 @@
+---
+export const prerender = true;
+import { getCollection } from "astro:content";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { useTranslations, pluralize } from "../../../i18n/translations";
+
+const t = useTranslations("en");
+
+const allPosts = await getCollection("blogEn", ({ data }) => !data.draft);
+const tagCounts = allPosts
+  .flatMap((p) => p.data.tags)
+  .reduce(
+    (acc, tag) => {
+      acc[tag] = (acc[tag] ?? 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+const tags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]);
+const maxCount = Math.max(...tags.map(([, c]) => c));
+---
+
+<BaseLayout
+  title={`${t("blog.allTags")} · ${t("blog.title")}`}
+  description={t("blog.allTags")}
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+    <a
+      href="/en/blog"
+      class="inline-flex items-center gap-1 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors mb-6"
+    >
+      &larr; {t("blog.title")}
+    </a>
+    <div class="mb-10">
+      <h1 class="text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-3">
+        {t("blog.allTags")}
+      </h1>
+      <p class="text-zinc-600 dark:text-zinc-400">
+        {tags.length}
+        {pluralize("en", tags.length, "tag", "tags", "tags")} &middot; {
+          allPosts.length
+        }
+        {
+          pluralize(
+            "en",
+            allPosts.length,
+            t("blog.post.one"),
+            t("blog.post.few"),
+            t("blog.post.many"),
+          )
+        }
+      </p>
+    </div>
+
+    <div class="tag-cloud flex flex-wrap items-start gap-3 sm:gap-4">
+      {
+        tags.map(([tag, count], i) => {
+          const ratio = count / maxCount;
+          const size = 0.75 + ratio * 0.25;
+          return (
+            <a
+              href={`/en/blog/tag/${tag}`}
+              class="tag-pill group relative inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 border border-zinc-200/80 dark:border-zinc-700/60 bg-white/50 dark:bg-white/[0.03] backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-[var(--color-brand)] dark:hover:border-[var(--color-brand-dark)] hover:shadow-[0_0_20px_-5px_var(--color-brand)] dark:hover:shadow-[0_0_20px_-5px_var(--color-brand-dark)]"
+              style={`font-size: ${size}rem; --delay: ${i * 0.03}s;`}
+            >
+              <span class="font-medium text-zinc-700 dark:text-zinc-200 group-hover:text-[var(--color-brand)] dark:group-hover:text-[var(--color-brand-dark)] transition-colors">
+                #{tag}
+              </span>
+              <span class="inline-flex items-center justify-center min-w-[1.25rem] h-5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-[10px] font-mono tabular-nums text-zinc-400 dark:text-zinc-500 group-hover:bg-[var(--color-brand)]/10 group-hover:text-[var(--color-brand)] dark:group-hover:bg-[var(--color-brand-dark)]/10 dark:group-hover:text-[var(--color-brand-dark)] transition-colors">
+                {count}
+              </span>
+            </a>
+          );
+        })
+      }
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .tag-pill {
+    animation: tagFloat 0.5s ease-out both;
+    animation-delay: var(--delay);
+  }
+
+  @keyframes tagFloat {
+    from {
+      opacity: 0;
+      transform: translateY(16px) scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+</style>
