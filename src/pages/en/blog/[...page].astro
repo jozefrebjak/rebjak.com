@@ -64,7 +64,7 @@ function formatDate(date: Date): string {
         <div class="mb-10 flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
           {visibleTags.map((tag) => (
             <a
-              href={`/en/blog/tag/${tag}`}
+              href={`/en/blog/tag/${tag}/`}
               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border border-zinc-200 dark:border-zinc-700/80 bg-zinc-50 dark:bg-zinc-800/50 text-zinc-600 dark:text-zinc-400 hover:border-[var(--color-brand)] hover:text-[var(--color-brand)] dark:hover:border-[var(--color-brand-dark)] dark:hover:text-[var(--color-brand-dark)] transition-colors"
             >
               #{tag}
@@ -74,7 +74,7 @@ function formatDate(date: Date): string {
             </a>
           ))}
           <a
-            href="/en/blog/tags"
+            href="/en/blog/tags/"
             class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap border border-zinc-200 dark:border-zinc-700/80 text-zinc-500 dark:text-zinc-400 hover:border-[var(--color-brand)] hover:text-[var(--color-brand)] dark:hover:border-[var(--color-brand-dark)] dark:hover:text-[var(--color-brand-dark)] transition-colors"
           >
             {t("blog.allTags")} &rarr;
@@ -89,7 +89,7 @@ function formatDate(date: Date): string {
       ) : (
         <div class="space-y-8">
           {page.data.map((post) => {
-            const slug = `/en/blog/${post.id.replace(/\.md$/, "")}`;
+            const slug = `/en/blog/${post.id.replace(/\.md$/, "")}/`;
             const mins = readingTime(post.body ?? "");
             return (
               <article class="group">
@@ -110,7 +110,7 @@ function formatDate(date: Date): string {
                   <div class="flex flex-wrap gap-1.5 mt-3">
                     {post.data.tags.map((tag: string) => (
                       <a
-                        href={`/en/blog/tag/${tag}`}
+                        href={`/en/blog/tag/${tag}/`}
                         class="px-2 py-0.5 rounded-full text-xs border border-zinc-200 dark:border-zinc-700/80 text-zinc-500 dark:text-zinc-400 hover:border-[var(--color-brand)] hover:text-[var(--color-brand)] dark:hover:border-[var(--color-brand-dark)] dark:hover:text-[var(--color-brand-dark)] transition-colors"
                       >
                         #{tag}

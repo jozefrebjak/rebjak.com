@@ -145,8 +145,10 @@ export function getAlternatePath(url: URL, targetLang: Lang): string {
   }
 
   if (targetLang === defaultLang) {
-    return '/' + segments.join('/');
+    const path = '/' + segments.join('/');
+    return path.endsWith('/') ? path : path + '/';
   }
 
-  return '/' + [targetLang, ...segments].join('/');
+  const path = '/' + [targetLang, ...segments].join('/');
+  return path.endsWith('/') ? path : path + '/';
 }

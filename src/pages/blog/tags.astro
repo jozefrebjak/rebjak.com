@@ -26,7 +26,7 @@ const maxCount = Math.max(...tags.map(([, c]) => c));
 >
   <div class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
     <a
-      href="/blog"
+      href="/blog/"
       class="inline-flex items-center gap-1 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors mb-6"
     >
       &larr; {t("blog.title")}
@@ -59,7 +59,7 @@ const maxCount = Math.max(...tags.map(([, c]) => c));
           const size = 0.75 + ratio * 0.25;
           return (
             <a
-              href={`/blog/tag/${tag}`}
+              href={`/blog/tag/${tag}/`}
               class="tag-pill group relative inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 border border-zinc-200/80 dark:border-zinc-700/60 bg-white/50 dark:bg-white/[0.03] backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-[var(--color-brand)] dark:hover:border-[var(--color-brand-dark)] hover:shadow-[0_0_20px_-5px_var(--color-brand)] dark:hover:shadow-[0_0_20px_-5px_var(--color-brand-dark)]"
               style={`font-size: ${size}rem; --delay: ${i * 0.03}s;`}
             >
