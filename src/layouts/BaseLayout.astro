@@ -98,7 +98,7 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
     </script>
   </head>
   <body class="min-h-screen flex flex-col">
-    <canvas id="bg-canvas" class="fixed inset-0 -z-10 pointer-events-none"
+    <canvas id="bg-canvas" class="hidden sm:block fixed inset-0 -z-10 pointer-events-none"
     ></canvas>
     <Header lang={lang} alternatePath={alternatePath} />
     <main class="flex-1">
@@ -176,7 +176,7 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 
               const proximity = 1 - dist / CONNECT_DIST;
               const depthFade = (a.depth + b.depth) / 2;
-              const baseAlpha = dark ? 0.1 : 0.45;
+              const baseAlpha = dark ? 0.1 : 0.3;
               const alpha = proximity * depthFade * baseAlpha;
 
               // gradient line: colour of A → colour of B
@@ -202,7 +202,7 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
             const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
             if (mdist < MOUSE_DIST) {
               const t = 1 - mdist / MOUSE_DIST;
-              const mAlpha = t * a.depth * (dark ? 0.6 : 1.0);
+              const mAlpha = t * a.depth * (dark ? 0.6 : 0.65);
               const grad = ctx.createLinearGradient(a.x, a.y, mouse.x, mouse.y);
               grad.addColorStop(0, `rgba(${ca},${mAlpha})`);
               grad.addColorStop(1, `rgba(${ca},0)`);
@@ -224,7 +224,7 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
             const near = mdist < MOUSE_DIST;
             const mt = near ? 1 - mdist / MOUSE_DIST : 0;
 
-            const baseA = dark ? 0.18 : 0.55;
+            const baseA = dark ? 0.18 : 0.38;
             const alpha = (baseA + mt * 0.75) * p.depth;
             const radius = 1.2 + p.depth * 1.2 + mt * 2;
 
@@ -240,7 +240,7 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
               );
               glow.addColorStop(
                 0,
-                `rgba(${col},${mt * (dark ? 0.35 : 0.6) * p.depth})`,
+                `rgba(${col},${mt * (dark ? 0.35 : 0.4) * p.depth})`,
               );
               glow.addColorStop(1, `rgba(${col},0)`);
               ctx.fillStyle = glow;
