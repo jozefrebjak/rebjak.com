@@ -9,6 +9,8 @@ interface Props {
   description?: string;
   ogImage?: string;
   alternatePath?: string;
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown>;
 }
 
 const {
@@ -16,6 +18,8 @@ const {
   description = "Jozef Rebjak — DevOps engineer, automation enthusiast.",
   ogImage,
   alternatePath,
+  noindex = false,
+  jsonLd,
 } = Astro.props;
 
 const lang = getLangFromUrl(Astro.url);
@@ -37,6 +41,7 @@ const enUrl = new URL(lang === "en" ? Astro.url.pathname : altPath, Astro.site);
 
     <title>{title} — rebjak.com</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
     <link rel="canonical" href={canonicalUrl} />
 
     <!-- Hreflang -->
@@ -49,7 +54,15 @@ const enUrl = new URL(lang === "en" ? Astro.url.pathname : altPath, Astro.site);
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:type" content="website" />
-    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta property="og:site_name" content="rebjak.com" />
+    <meta property="og:locale" content={lang === "sk" ? "sk_SK" : "en_US"} />
+    <meta property="og:image" content={ogImage ?? new URL("/og-default.png", Astro.site).href} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={`${title} — rebjak.com`} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage ?? new URL("/og-default.png", Astro.site).href} />
 
     <!-- RSS -->
     <link
@@ -79,6 +92,11 @@ const enUrl = new URL(lang === "en" ? Astro.url.pathname : altPath, Astro.site);
       src="https://cloud.umami.is/script.js"
       data-website-id="64f03f61-c995-4e54-89a0-f54d3d3c6dc9"
       is:inline></script>
+
+    <!-- JSON-LD -->
+    {jsonLd && (
+      <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    )}
 
     <!-- Dark mode: prevent flash -->
     <script is:inline>
