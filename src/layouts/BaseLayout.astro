@@ -8,6 +8,7 @@ interface Props {
   title: string;
   description?: string;
   ogImage?: string;
+  ogType?: string;
   alternatePath?: string;
   noindex?: boolean;
   jsonLd?: Record<string, unknown>;
@@ -17,6 +18,7 @@ const {
   title,
   description = "Jozef Rebjak — DevOps engineer, automation enthusiast.",
   ogImage,
+  ogType = "website",
   alternatePath,
   noindex = false,
   jsonLd,
@@ -53,10 +55,14 @@ const enUrl = new URL(lang === "en" ? Astro.url.pathname : altPath, Astro.site);
     <meta property="og:title" content={`${title} — rebjak.com`} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
+    {ogType === "article" && <meta property="article:author" content="Jozef Rebjak" />}
     <meta property="og:site_name" content="rebjak.com" />
     <meta property="og:locale" content={lang === "sk" ? "sk_SK" : "en_US"} />
     <meta property="og:image" content={ogImage ?? new URL("/og-default.png", Astro.site).href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
