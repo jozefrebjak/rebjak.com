@@ -3,7 +3,7 @@ title: 'SEO pre Astro blog — OG obrázky, JSON-LD a noindex'
 description: 'Ako som pridal dynamické Open Graph obrázky, Twitter card meta, JSON-LD štruktúrované dáta a noindex pre stránkovanie. Building in public, tretí diel.'
 pubDate: 2026-03-07T22:00:00
 tags: ['astro', 'seo', 'building-in-public']
-draft: true
+draft: false
 ---
 
 Web už má analytics, sitemap aj RSS. Teraz riešim, ako vyzerá, keď ho niekto zdieľa na sociálnych sieťach — a čo o ňom vie Google.

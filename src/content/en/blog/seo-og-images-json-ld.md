@@ -3,7 +3,7 @@ title: 'SEO for an Astro blog — OG images, JSON-LD and noindex'
 description: 'How I added dynamic Open Graph images, Twitter card meta, JSON-LD structured data and noindex for pagination. Building in public, part three.'
 pubDate: 2026-03-07T22:00:00
 tags: ['astro', 'seo', 'building-in-public']
-draft: true
+draft: false
 ---
 
 The site already has analytics, a sitemap and RSS. Now I'm tackling how it looks when someone shares it on social media — and what Google actually understands about it.
