@@ -18,9 +18,9 @@ const prefix = lang === "en" ? "/en" : "";
 
 const navLinks = [
   { href: `${prefix}/`, label: t("nav.home"), exact: true },
-  { href: `${prefix}/cv`, label: t("nav.cv") },
-  { href: `${prefix}/portfolio`, label: t("nav.portfolio") },
-  { href: `${prefix}/blog`, label: t("nav.blog") },
+  { href: `${prefix}/cv/`, label: t("nav.cv") },
+  { href: `${prefix}/portfolio/`, label: t("nav.portfolio") },
+  { href: `${prefix}/blog/`, label: t("nav.blog") },
 ];
 
 const alternatePath =
@@ -45,7 +45,7 @@ function isActive(href: string, exact = false) {
     class="max-w-4xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between"
   >
     <a
-      href={prefix || "/"}
+      href={`${prefix}/`}
       class="font-mono font-semibold text-sm tracking-tight text-zinc-900 dark:text-zinc-100 hover:opacity-80 transition-opacity"
     >
       rebjak<span
@@ -145,7 +145,7 @@ function isActive(href: string, exact = false) {
     class="flex items-center justify-between px-6 h-16 border-b border-zinc-200/60 dark:border-white/[0.06] shrink-0"
   >
     <a
-      href={prefix || "/"}
+      href={`${prefix}/`}
       class="fab-nav-link font-mono font-semibold text-base text-zinc-900 dark:text-white/90 tracking-tight"
     >
       rebjak<span

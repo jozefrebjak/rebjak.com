@@ -46,7 +46,7 @@ const t = useTranslations(lang);
         </p>
 
         <p
-          class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-500 leading-relaxed mb-4 sm:mb-8 max-w-md mx-auto sm:mx-0"
+          class="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed mb-4 sm:mb-8 max-w-md mx-auto sm:mx-0"
         >
           Started on networks, now I write code and automate everything I can —
           from network to deploy. Linux, Docker, PHP, CI/CD.
@@ -56,7 +56,7 @@ const t = useTranslations(lang);
           class="flex flex-wrap justify-center sm:justify-start gap-3 mt-5 sm:mt-0"
         >
           <a
-            href="/en/cv"
+            href="/en/cv/"
             class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all hover:-translate-y-0.5 text-white shadow-lg shadow-cyan-900/20"
             style="background-image: linear-gradient(135deg, var(--color-brand), var(--color-violet-dark));"
           >
@@ -75,7 +75,7 @@ const t = useTranslations(lang);
             </svg>
           </a>
           <a
-            href="/en/blog"
+            href="/en/blog/"
             class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all hover:-translate-y-0.5 glass text-zinc-600 dark:text-zinc-300 hover:text-zinc-900 dark:hover:text-zinc-100"
           >
             {t("hero.cta.blog")}
@@ -106,7 +106,7 @@ const t = useTranslations(lang);
             <span
               class="w-2 h-2 rounded-full bg-green-400/80 cursor-pointer hover:brightness-125 transition-all"
               title="Maximize"></span>
-            <span class="ml-2 text-zinc-400 dark:text-zinc-600 text-[10px]"
+            <span class="ml-2 text-zinc-500 dark:text-zinc-500 text-[10px]"
               >jrebjak@core-01 ~</span
             >
           </div>
@@ -140,7 +140,7 @@ const t = useTranslations(lang);
             >
               {value}
             </span>
-            <span class="text-xs font-mono text-zinc-400 dark:text-zinc-600">
+            <span class="text-xs font-mono text-zinc-500 dark:text-zinc-500">
               {label}
             </span>
           </div>
@@ -152,7 +152,7 @@ const t = useTranslations(lang);
   <!-- ── NAV CARDS ─────────────────────────────────────────── -->
   <section class="max-w-4xl mx-auto px-4 sm:px-6 pb-16 sm:pb-20">
     <p
-      class="text-xs font-mono text-zinc-400 dark:text-zinc-600 uppercase tracking-widest mb-4"
+      class="text-xs font-mono text-zinc-500 dark:text-zinc-500 uppercase tracking-widest mb-4"
     >
       — what you'll find here
     </p>
@@ -160,21 +160,21 @@ const t = useTranslations(lang);
       {
         [
           {
-            href: "/en/cv",
+            href: "/en/cv/",
             label: "cv",
             title: "Experience & skills",
             desc: "From network tech to ISP admin, sysadmin and developer.",
             dot: "bg-[var(--color-brand-dark)]",
           },
           {
-            href: "/en/portfolio",
+            href: "/en/portfolio/",
             label: "portfolio",
             title: "Projects & tools",
             desc: "Things I built, automated or fixed.",
             dot: "bg-[var(--color-violet-dark)]",
           },
           {
-            href: "/en/blog",
+            href: "/en/blog/",
             label: "blog",
             title: "Networks, Linux, code",
             desc: "Notes from the field. What I solved, what I learned.",
@@ -187,17 +187,17 @@ const t = useTranslations(lang);
           >
             <div class="flex items-center gap-2 mb-3">
               <span class={`w-1.5 h-1.5 rounded-full ${dot}`} />
-              <span class="text-xs font-mono text-zinc-400 dark:text-zinc-600">
+              <span class="text-xs font-mono text-zinc-500 dark:text-zinc-500">
                 {label}://
               </span>
             </div>
             <span class="font-semibold text-zinc-900 dark:text-zinc-100 mb-1.5 transition-colors group-hover:text-[var(--color-brand)] dark:group-hover:text-[var(--color-brand-dark)]">
               {title}
             </span>
-            <span class="text-sm text-zinc-500 dark:text-zinc-500 leading-relaxed flex-1">
+            <span class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed flex-1">
               {desc}
             </span>
-            <span class="mt-4 text-xs font-mono text-zinc-300 dark:text-zinc-700 group-hover:text-[var(--color-brand-dark)] transition-colors">
+            <span class="mt-4 text-xs font-mono text-zinc-400 dark:text-zinc-600 group-hover:text-[var(--color-brand-dark)] transition-colors">
               open →
             </span>
           </a>

@@ -55,13 +55,13 @@ function readingTime(body: string): number {
   description={post.data.description}
   ogImage={ogImage}
   ogType="article"
-  alternatePath="/en/blog"
+  alternatePath="/en/blog/"
   jsonLd={jsonLd}
 >
   <article class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
     <!-- Back link -->
     <a
-      href="/blog"
+      href="/blog/"
       class="inline-flex items-center gap-1 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 mb-8 transition-colors"
     >
       ← Blog
@@ -73,7 +73,7 @@ function readingTime(body: string): number {
         {
           post.data.tags.map((tag: string) => (
             <a
-              href={`/blog/tag/${tag}`}
+              href={`/blog/tag/${tag}/`}
               class="px-2.5 py-1 rounded-full text-xs font-medium border border-zinc-200 dark:border-zinc-700/80 text-zinc-500 dark:text-zinc-400 hover:border-[var(--color-brand)] hover:text-[var(--color-brand)] dark:hover:border-[var(--color-brand-dark)] dark:hover:text-[var(--color-brand-dark)] transition-colors"
             >
               #{tag}
