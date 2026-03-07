@@ -3,243 +3,262 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
-  /* Primary brand — cyan */
-  --color-brand:      oklch(0.62 0.20 220);
-  --color-brand-dark: oklch(0.72 0.18 220);
+    /* Primary brand — cyan */
+    --color-brand: oklch(0.62 0.20 220);
+    --color-brand-dark: oklch(0.72 0.18 220);
 
-  /* Accent colours matching canvas palette */
-  --color-violet:      oklch(0.55 0.22 290);
-  --color-violet-dark: oklch(0.68 0.20 290);
-  --color-emerald:      oklch(0.60 0.18 165);
-  --color-emerald-dark: oklch(0.72 0.16 165);
+    /* Accent colours matching canvas palette */
+    --color-violet: oklch(0.55 0.22 290);
+    --color-violet-dark: oklch(0.68 0.20 290);
+    --color-emerald: oklch(0.60 0.18 165);
+    --color-emerald-dark: oklch(0.72 0.16 165);
 }
 
 @layer base {
-  :root {
-    color-scheme: light dark;
-  }
+    :root {
+        color-scheme: light dark;
+    }
 
-  html {
-    @apply antialiased scroll-smooth;
-  }
+    html {
+        @apply antialiased scroll-smooth;
+    }
 
-  body {
-    /* light: very clean off-white; dark: near-black with slight blue tint */
-    @apply bg-[#f8f9fb] text-zinc-900 dark:bg-[#080c12] dark:text-zinc-100;
-  }
+    body {
+        /* light: very clean off-white; dark: near-black with slight blue tint */
+        @apply bg-[#f8f9fb] text-zinc-900 dark:bg-[#080c12] dark:text-zinc-100;
+    }
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight;
-  }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply font-semibold tracking-tight;
+    }
 
-  a {
-    @apply transition-colors duration-150;
-  }
+    a {
+        @apply transition-colors duration-150;
+    }
 
-  /* ── Blog prose ─────────────────────────────── */
-  .prose {
-    @apply text-zinc-700 dark:text-zinc-300 max-w-none;
-  }
+    /* ── Blog prose ─────────────────────────────── */
+    .prose {
+        @apply text-zinc-700 dark:text-zinc-300 max-w-none;
+    }
 
-  .prose h1, .prose h2, .prose h3 {
-    @apply text-zinc-900 dark:text-zinc-100 font-semibold;
-  }
+    .prose h1,
+    .prose h2,
+    .prose h3 {
+        @apply text-zinc-900 dark:text-zinc-100 font-semibold;
+    }
 
-  .prose h2 { @apply text-2xl mt-10 mb-4; }
-  .prose h3 { @apply text-xl mt-8 mb-3; }
-  .prose p  { @apply leading-7 mb-5; }
+    .prose h2 {
+        @apply text-2xl mt-10 mb-4;
+    }
 
-  .prose a {
-    @apply text-[var(--color-brand)] dark:text-[var(--color-brand-dark)] underline underline-offset-4;
-  }
+    .prose h3 {
+        @apply text-xl mt-8 mb-3;
+    }
 
-  .prose code {
-    @apply font-mono text-sm bg-zinc-100 dark:bg-zinc-800/80 rounded px-1.5 py-0.5
-           text-[var(--color-brand)] dark:text-[var(--color-brand-dark)];
-  }
+    .prose p {
+        @apply leading-7 mb-5;
+    }
 
-  .prose pre {
-    @apply rounded-xl p-5 overflow-x-auto my-6
-           border border-zinc-200 dark:border-zinc-800/60;
-  }
+    .prose a {
+        @apply text-[var(--color-brand)] dark:text-[var(--color-brand-dark)] underline underline-offset-4;
+    }
 
-  /* Shiki dual-theme via CSS variables (defaultColor: false) */
-  .prose pre { background-color: var(--shiki-light-bg); }
-  .prose pre span { color: var(--shiki-light); }
+    .prose code {
+        @apply font-mono text-sm bg-zinc-100 dark:bg-zinc-800/80 rounded px-1.5 py-0.5 text-[var(--color-brand)] dark:text-[var(--color-brand-dark)];
+    }
 
-  .dark .prose pre { background-color: var(--shiki-dark-bg); }
-  .dark .prose pre span { color: var(--shiki-dark); }
+    .prose pre {
+        @apply rounded-xl p-5 overflow-x-auto my-6 border border-zinc-200 dark:border-zinc-800/60;
+    }
 
-  .prose pre code {
-    @apply bg-transparent p-0;
-  }
+    /* Shiki dual-theme via CSS variables (defaultColor: false) */
+    .prose pre {
+        background-color: var(--shiki-light-bg);
+    }
 
-  .prose ul  { @apply list-disc pl-5 mb-5 space-y-1.5; }
-  .prose ol  { @apply list-decimal pl-5 mb-5 space-y-1.5; }
+    .prose pre span {
+        color: var(--shiki-light);
+    }
 
-  .prose blockquote {
-    @apply border-l-2 border-[var(--color-brand)] pl-4 italic
-           text-zinc-500 dark:text-zinc-400 my-6;
-  }
+    .dark .prose pre {
+        background-color: var(--shiki-dark-bg);
+    }
 
-  .prose hr {
-    @apply border-zinc-200 dark:border-zinc-800 my-8;
-  }
+    .dark .prose pre span {
+        color: var(--shiki-dark);
+    }
 
-  .prose table {
-    @apply text-sm border-collapse;
-    width: auto;
-    max-width: 100%;
-  }
+    .prose pre code {
+        @apply bg-transparent p-0;
+    }
 
-  /* border + radius on the JS-injected wrapper div */
-  .prose .table-wrapper {
-    @apply my-6 rounded-xl overflow-hidden
-           border border-zinc-200 dark:border-zinc-700;
-    overflow-x: auto;
-    max-width: 100%;
-    width: fit-content;
-  }
+    .prose ul {
+        @apply list-disc pl-5 mb-5 space-y-1.5;
+    }
 
-  .prose thead {
-    @apply bg-zinc-100 dark:bg-zinc-800;
-  }
+    .prose ol {
+        @apply list-decimal pl-5 mb-5 space-y-1.5;
+    }
 
-  .prose th {
-    @apply px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider
-           text-zinc-500 dark:text-zinc-400
-           border-b border-zinc-200 dark:border-zinc-700;
-  }
+    .prose blockquote {
+        @apply border-l-2 border-[var(--color-brand)] pl-4 italic text-zinc-500 dark:text-zinc-400 my-6;
+    }
 
-  .prose td {
-    @apply px-4 py-3 text-zinc-700 dark:text-zinc-300
-           border-b border-zinc-100 dark:border-zinc-800/80;
-    white-space: nowrap;
-  }
+    .prose hr {
+        @apply border-zinc-200 dark:border-zinc-800 my-8;
+    }
 
-  .prose tbody tr:last-child td {
-    @apply border-b-0;
-  }
+    .prose table {
+        @apply text-sm border-collapse;
+        width: auto;
+        max-width: 100%;
+    }
 
-  .prose tbody tr:nth-child(even) {
-    @apply bg-zinc-50 dark:bg-zinc-800/30;
-  }
+    /* border + radius on the JS-injected wrapper div */
+    .prose .table-wrapper {
+        @apply my-6 rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-700;
+        overflow-x: auto;
+        max-width: 100%;
+        width: fit-content;
+    }
 
-  .prose tbody tr:hover {
-    @apply bg-zinc-100/70 dark:bg-zinc-700/30;
-  }
+    .prose thead {
+        @apply bg-zinc-100 dark:bg-zinc-800;
+    }
 
-  .prose details {
-    @apply my-4 rounded-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden;
-  }
+    .prose th {
+        @apply px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 border-b border-zinc-200 dark:border-zinc-700;
+    }
 
-  .prose summary {
-    @apply px-4 py-2.5 cursor-pointer select-none font-mono text-sm
-           text-zinc-600 dark:text-zinc-400
-           bg-zinc-50 dark:bg-zinc-800/60
-           hover:bg-zinc-100 dark:hover:bg-zinc-800
-           transition-colors list-none;
-  }
+    .prose td {
+        @apply px-4 py-3 text-zinc-700 dark:text-zinc-300 border-b border-zinc-100 dark:border-zinc-800/80;
+        white-space: nowrap;
+    }
 
-  .prose summary::-webkit-details-marker { display: none; }
+    .prose tbody tr:last-child td {
+        @apply border-b-0;
+    }
 
-  .prose summary::before {
-    content: '▶ ';
-    @apply text-xs text-zinc-400 dark:text-zinc-500;
-  }
+    .prose tbody tr:nth-child(even) {
+        @apply bg-zinc-50 dark:bg-zinc-800/30;
+    }
 
-  .prose details[open] summary::before {
-    content: '▼ ';
-  }
+    .prose tbody tr:hover {
+        @apply bg-zinc-100/70 dark:bg-zinc-700/30;
+    }
 
-  .prose details > *:not(summary) {
-    @apply px-0 mx-0;
-  }
+    .prose details {
+        @apply my-4 rounded-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden;
+    }
 
-  .prose details pre {
-    @apply rounded-none my-0 border-0 border-t border-zinc-200 dark:border-zinc-800/60;
-  }
+    .prose summary {
+        @apply px-4 py-2.5 cursor-pointer select-none font-mono text-sm text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800/60 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors list-none;
+    }
 
-  /* ── Callout alerts ────────────────────────── */
-  .prose .callout {
-    @apply my-6 rounded-xl border px-5 py-4 text-sm leading-relaxed;
-  }
+    .prose summary::-webkit-details-marker {
+        display: none;
+    }
 
-  .prose .callout > p:last-child {
-    @apply mb-0;
-  }
+    .prose summary::before {
+        content: '▶ ';
+        @apply text-xs text-zinc-400 dark:text-zinc-500;
+    }
 
-  .prose .callout::before {
-    @apply block font-semibold text-xs uppercase tracking-wider mb-2;
-  }
+    .prose details[open] summary::before {
+        content: '▼ ';
+    }
 
-  .prose .callout.note {
-    @apply bg-blue-50/60 border-blue-200 text-blue-900
-           dark:bg-blue-950/30 dark:border-blue-800/50 dark:text-blue-200;
-  }
+    .prose details>*:not(summary) {
+        @apply px-0 mx-0;
+    }
 
-  .prose .callout.note::before {
-    content: '📝 Note';
-    @apply text-blue-600 dark:text-blue-400;
-  }
+    .prose details pre {
+        @apply rounded-none my-0 border-0 border-t border-zinc-200 dark:border-zinc-800/60;
+    }
 
-  .prose .callout.tip {
-    @apply bg-emerald-50/60 border-emerald-200 text-emerald-900
-           dark:bg-emerald-950/30 dark:border-emerald-800/50 dark:text-emerald-200;
-  }
+    /* ── Callout alerts ────────────────────────── */
+    .prose .callout {
+        @apply my-6 rounded-xl border px-5 py-4 text-sm leading-relaxed;
+    }
 
-  .prose .callout.tip::before {
-    content: '💡 Tip';
-    @apply text-emerald-600 dark:text-emerald-400;
-  }
+    .prose .callout>p:last-child {
+        @apply mb-0;
+    }
 
-  .prose .callout.warning {
-    @apply bg-amber-50/60 border-amber-200 text-amber-900
-           dark:bg-amber-950/30 dark:border-amber-800/50 dark:text-amber-200;
-  }
+    .prose .callout::before {
+        @apply block font-semibold text-xs uppercase tracking-wider mb-2;
+    }
 
-  .prose .callout.warning::before {
-    content: '⚠️ Warning';
-    @apply text-amber-600 dark:text-amber-400;
-  }
+    .prose .callout.note {
+        @apply bg-blue-50/60 border-blue-200 text-blue-900 dark:bg-blue-950/30 dark:border-blue-800/50 dark:text-blue-200;
+    }
 
-  /* ── Code block copy button ─────────────────── */
-  .code-block-wrapper {
-    @apply relative my-6;
-  }
+    .prose .callout.note::before {
+        content: '📝 Note';
+        @apply text-blue-600 dark:text-blue-400;
+    }
 
-  .code-block-wrapper .prose pre {
-    @apply my-0;
-  }
+    .prose .callout.tip {
+        @apply bg-emerald-50/60 border-emerald-200 text-emerald-900 dark:bg-emerald-950/30 dark:border-emerald-800/50 dark:text-emerald-200;
+    }
 
-  .copy-btn {
-    @apply absolute top-2.5 right-3
-           px-2.5 py-1 rounded text-xs font-mono
-           text-zinc-500 bg-zinc-200/80 border border-zinc-300
-           hover:text-zinc-900 hover:bg-zinc-300
-           dark:text-zinc-400 dark:bg-zinc-700/60 dark:border-zinc-600/50
-           dark:hover:text-zinc-100 dark:hover:bg-zinc-600
-           transition-all duration-150
-           opacity-0;
-  }
+    .prose .callout.tip::before {
+        content: '💡 Tip';
+        @apply text-emerald-600 dark:text-emerald-400;
+    }
 
-  .code-block-wrapper:hover .copy-btn {
-    @apply opacity-100;
-  }
+    .prose .callout.warning {
+        @apply bg-amber-50/60 border-amber-200 text-amber-900 dark:bg-amber-950/30 dark:border-amber-800/50 dark:text-amber-200;
+    }
 
-  /* ── Utility: gradient text ─────────────────── */
-  .grad-text {
-    @apply text-transparent bg-clip-text;
-    background-image: linear-gradient(135deg, var(--color-brand-dark), var(--color-violet-dark));
-  }
+    .prose .callout.warning::before {
+        content: '⚠️ Warning';
+        @apply text-amber-600 dark:text-amber-400;
+    }
 
-  /* ── Glassmorphism card ─────────────────────── */
-  .glass {
-    @apply bg-white/70 dark:bg-white/[0.03]
-           border border-zinc-200/80 dark:border-white/[0.06]
-           backdrop-blur-sm;
-  }
+    /* ── Code block copy button ─────────────────── */
+    .code-block-wrapper {
+        @apply relative my-6;
+    }
+
+    .code-block-wrapper .prose pre {
+        @apply my-0;
+    }
+
+    .copy-btn {
+        @apply absolute top-2.5 right-3 px-2.5 py-1 rounded text-xs font-mono text-zinc-500 bg-zinc-200/80 border border-zinc-300 hover:text-zinc-900 hover:bg-zinc-300 dark:text-zinc-400 dark:bg-zinc-700/60 dark:border-zinc-600/50 dark:hover:text-zinc-100 dark:hover:bg-zinc-600 transition-all duration-150 opacity-0;
+    }
+
+    .code-block-wrapper:hover .copy-btn {
+        @apply opacity-100;
+    }
+
+    /* ── Utility: gradient text ─────────────────── */
+    .grad-text {
+        @apply text-transparent bg-clip-text;
+        background-image: linear-gradient(135deg, var(--color-brand-dark), var(--color-violet-dark));
+    }
+
+    /* ── Hide scrollbar ───────────────────────────── */
+    .scrollbar-none {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .scrollbar-none::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* ── Glassmorphism card ─────────────────────── */
+    .glass {
+        @apply bg-white/70 dark:bg-white/[0.03] border border-zinc-200/80 dark:border-white/[0.06] backdrop-blur-sm;
+    }
 }

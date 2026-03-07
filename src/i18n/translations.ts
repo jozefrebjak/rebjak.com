@@ -42,6 +42,15 @@ export const ui = {
     'blog.subtitle': 'Siete, Linux, automatizácia a veci z praxe',
     'blog.readmore': 'Čítať ďalej',
     'blog.minutes': 'min čítania',
+    'blog.taggedWith': 'Príspevky s tagom',
+    'blog.post.one': 'príspevok',
+    'blog.post.few': 'príspevky',
+    'blog.post.many': 'príspevkov',
+    'blog.allTags': 'Všetky tagy',
+    'blog.allPosts': 'Všetky príspevky',
+    'blog.newer': 'Novšie',
+    'blog.older': 'Staršie',
+    'blog.page': 'Strana',
 
     // Footer
     'footer.rights': 'Všetky práva vyhradené',
@@ -85,6 +94,15 @@ export const ui = {
     'blog.subtitle': 'Networks, Linux, automation and notes from the field',
     'blog.readmore': 'Read more',
     'blog.minutes': 'min read',
+    'blog.taggedWith': 'Posts tagged with',
+    'blog.post.one': 'post',
+    'blog.post.few': 'posts',
+    'blog.post.many': 'posts',
+    'blog.allTags': 'All tags',
+    'blog.allPosts': 'All posts',
+    'blog.newer': 'Newer',
+    'blog.older': 'Older',
+    'blog.page': 'Page',
 
     // Footer
     'footer.rights': 'All rights reserved',
@@ -100,8 +118,15 @@ export type TranslationKey = keyof (typeof ui)['sk'];
 
 export function useTranslations(lang: Lang) {
   return function t(key: TranslationKey): string {
-    return ui[lang][key] ?? ui[defaultLang][key] ?? key;
+    return (ui[lang] as Record<string, string>)[key] ?? (ui[defaultLang] as Record<string, string>)[key] ?? key;
   };
+}
+
+export function pluralize(lang: Lang, count: number, one: string, few: string, many: string): string {
+  if (lang === 'en') return count === 1 ? one : many;
+  if (count === 1) return one;
+  if (count >= 2 && count <= 4) return few;
+  return many;
 }
 
 export function getLangFromUrl(url: URL): Lang {

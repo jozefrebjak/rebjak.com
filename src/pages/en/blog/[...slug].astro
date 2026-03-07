@@ -1,12 +1,12 @@
 ---
 export const prerender = true;
-import { getCollection, render } from 'astro:content';
-import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blogEn', ({ data }) => !data.draft);
+  const posts = await getCollection("blogEn", ({ data }) => !data.draft);
   return posts.map((post) => ({
-    params: { slug: post.id.replace(/\.md$/, '') },
+    params: { slug: post.id.replace(/\.md$/, "") },
     props: { post },
   }));
 }
@@ -14,13 +14,17 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { Content } = await render(post);
 
-const pubDateFormatted = post.data.pubDate.toLocaleDateString('en-US', {
-  year: 'numeric', month: 'long', day: 'numeric',
+const pubDateFormatted = post.data.pubDate.toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
 });
 
 function formatDate(date: Date): string {
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric', month: 'long', day: 'numeric',
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   });
 }
 
@@ -29,27 +33,42 @@ function readingTime(body: string): number {
 }
 ---
 
-<BaseLayout title={`${post.data.title} · ${pubDateFormatted}`} description={post.data.description} alternatePath="/blog">
+<BaseLayout
+  title={`${post.data.title} · ${pubDateFormatted}`}
+  description={post.data.description}
+  alternatePath="/blog"
+>
   <article class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
-    <a href="/en/blog"
-      class="inline-flex items-center gap-1 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 mb-8 transition-colors">
+    <a
+      href="/en/blog"
+      class="inline-flex items-center gap-1 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 mb-8 transition-colors"
+    >
       ← Blog
     </a>
 
     <header class="mb-10">
-      <div class="flex flex-wrap gap-1.5 mb-4">
-        {post.data.tags.map((tag: string) => (
-          <span class="px-2 py-0.5 rounded text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
-            #{tag}
-          </span>
-        ))}
+      <div class="flex flex-wrap gap-2 mb-4">
+        {
+          post.data.tags.map((tag: string) => (
+            <a
+              href={`/en/blog/tag/${tag}`}
+              class="px-2.5 py-1 rounded-full text-xs font-medium border border-zinc-200 dark:border-zinc-700/80 text-zinc-500 dark:text-zinc-400 hover:border-[var(--color-brand)] hover:text-[var(--color-brand)] dark:hover:border-[var(--color-brand-dark)] dark:hover:text-[var(--color-brand-dark)] transition-colors"
+            >
+              #{tag}
+            </a>
+          ))
+        }
       </div>
-      <h1 class="text-3xl sm:text-4xl font-bold text-zinc-900 dark:text-zinc-100 leading-tight mb-4">
+      <h1
+        class="text-3xl sm:text-4xl font-bold text-zinc-900 dark:text-zinc-100 leading-tight mb-4"
+      >
         {post.data.title}
       </h1>
-      <p class="text-zinc-600 dark:text-zinc-400 text-lg mb-4">{post.data.description}</p>
+      <p class="text-zinc-600 dark:text-zinc-400 text-lg mb-4">
+        {post.data.description}
+      </p>
       <time class="text-sm font-mono text-zinc-500 dark:text-zinc-400">
-        {formatDate(post.data.pubDate)} · {readingTime(post.body ?? '')} min read
+        {formatDate(post.data.pubDate)} · {readingTime(post.body ?? "")} min read
       </time>
     </header>
 
@@ -61,30 +80,32 @@ function readingTime(body: string): number {
 
 <script>
   // Wrap tables: border + radius on wrapper, overflow scroll on mobile
-  document.querySelectorAll('.prose table').forEach((table) => {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'table-wrapper';
+  document.querySelectorAll(".prose table").forEach((table) => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "table-wrapper";
     table.parentNode!.insertBefore(wrapper, table);
     wrapper.appendChild(table);
   });
 
-  document.querySelectorAll('.prose pre').forEach((pre) => {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'code-block-wrapper';
+  document.querySelectorAll(".prose pre").forEach((pre) => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "code-block-wrapper";
     pre.parentNode!.insertBefore(wrapper, pre);
     wrapper.appendChild(pre);
 
-    const btn = document.createElement('button');
-    btn.className = 'copy-btn';
-    btn.textContent = 'Copy';
-    btn.setAttribute('aria-label', 'Copy code');
+    const btn = document.createElement("button");
+    btn.className = "copy-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code");
     wrapper.appendChild(btn);
 
-    btn.addEventListener('click', async () => {
-      const code = (pre.querySelector('code') ?? pre).textContent ?? '';
+    btn.addEventListener("click", async () => {
+      const code = (pre.querySelector("code") ?? pre).textContent ?? "";
       await navigator.clipboard.writeText(code);
-      btn.textContent = '✓ Copied';
-      setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+      btn.textContent = "✓ Copied";
+      setTimeout(() => {
+        btn.textContent = "Copy";
+      }, 2000);
     });
   });
 </script>

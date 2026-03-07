@@ -32,7 +32,11 @@ function readingTime(body: string): number {
 }
 ---
 
-<BaseLayout title={`${post.data.title} · ${pubDateFormatted}`} description={post.data.description} alternatePath="/en/blog">
+<BaseLayout
+  title={`${post.data.title} · ${pubDateFormatted}`}
+  description={post.data.description}
+  alternatePath="/en/blog"
+>
   <article class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
     <!-- Back link -->
     <a
@@ -44,12 +48,15 @@ function readingTime(body: string): number {
 
     <!-- Header -->
     <header class="mb-10">
-      <div class="flex flex-wrap gap-1.5 mb-4">
+      <div class="flex flex-wrap gap-2 mb-4">
         {
           post.data.tags.map((tag: string) => (
-            <span class="px-2 py-0.5 rounded text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+            <a
+              href={`/blog/tag/${tag}`}
+              class="px-2.5 py-1 rounded-full text-xs font-medium border border-zinc-200 dark:border-zinc-700/80 text-zinc-500 dark:text-zinc-400 hover:border-[var(--color-brand)] hover:text-[var(--color-brand)] dark:hover:border-[var(--color-brand-dark)] dark:hover:text-[var(--color-brand-dark)] transition-colors"
+            >
               #{tag}
-            </span>
+            </a>
           ))
         }
       </div>
@@ -75,30 +82,32 @@ function readingTime(body: string): number {
 
 <script>
   // Wrap tables: border + radius on wrapper, overflow scroll on mobile
-  document.querySelectorAll('.prose table').forEach((table) => {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'table-wrapper';
+  document.querySelectorAll(".prose table").forEach((table) => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "table-wrapper";
     table.parentNode!.insertBefore(wrapper, table);
     wrapper.appendChild(table);
   });
 
-  document.querySelectorAll('.prose pre').forEach((pre) => {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'code-block-wrapper';
+  document.querySelectorAll(".prose pre").forEach((pre) => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "code-block-wrapper";
     pre.parentNode!.insertBefore(wrapper, pre);
     wrapper.appendChild(pre);
 
-    const btn = document.createElement('button');
-    btn.className = 'copy-btn';
-    btn.textContent = 'Kopírovať';
-    btn.setAttribute('aria-label', 'Kopírovať kód');
+    const btn = document.createElement("button");
+    btn.className = "copy-btn";
+    btn.textContent = "Kopírovať";
+    btn.setAttribute("aria-label", "Kopírovať kód");
     wrapper.appendChild(btn);
 
-    btn.addEventListener('click', async () => {
-      const code = (pre.querySelector('code') ?? pre).textContent ?? '';
+    btn.addEventListener("click", async () => {
+      const code = (pre.querySelector("code") ?? pre).textContent ?? "";
       await navigator.clipboard.writeText(code);
-      btn.textContent = '✓ Skopírované';
-      setTimeout(() => { btn.textContent = 'Kopírovať'; }, 2000);
+      btn.textContent = "✓ Skopírované";
+      setTimeout(() => {
+        btn.textContent = "Kopírovať";
+      }, 2000);
     });
   });
 </script>

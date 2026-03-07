@@ -13,7 +13,7 @@ interface Props {
 
 const {
   title,
-  description = "Jozef Rebjak — developer, builder.",
+  description = "Jozef Rebjak — DevOps engineer, automation enthusiast.",
   ogImage,
   alternatePath,
 } = Astro.props;
@@ -47,7 +47,7 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
       rel="alternate"
       type="application/rss+xml"
       title="rebjak.com — blog"
-      href={lang === 'en' ? '/en/rss.xml' : '/rss.xml'}
+      href={lang === "en" ? "/en/rss.xml" : "/rss.xml"}
     />
 
     <!-- Favicon -->
@@ -65,7 +65,11 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
     />
 
     <!-- Umami Analytics -->
-    <script defer src="https://cloud.umami.is/script.js" data-website-id="64f03f61-c995-4e54-89a0-f54d3d3c6dc9" is:inline></script>
+    <script
+      defer
+      src="https://cloud.umami.is/script.js"
+      data-website-id="64f03f61-c995-4e54-89a0-f54d3d3c6dc9"
+      is:inline></script>
 
     <!-- Dark mode: prevent flash -->
     <script is:inline>
@@ -98,8 +102,9 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
     </script>
   </head>
   <body class="min-h-screen flex flex-col">
-    <canvas id="bg-canvas" class="hidden sm:block fixed inset-0 -z-10 pointer-events-none"
-    ></canvas>
+    <canvas
+      id="bg-canvas"
+      class="hidden sm:block fixed inset-0 -z-10 pointer-events-none"></canvas>
     <Header lang={lang} alternatePath={alternatePath} />
     <main class="flex-1">
       <slot />
