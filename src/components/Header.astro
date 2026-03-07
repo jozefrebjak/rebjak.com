@@ -17,7 +17,7 @@ const t = useTranslations(lang);
 const prefix = lang === "en" ? "/en" : "";
 
 const navLinks = [
-  { href: `${prefix}/`, label: t("nav.home") },
+  { href: `${prefix}/`, label: t("nav.home"), exact: true },
   { href: `${prefix}/cv`, label: t("nav.cv") },
   { href: `${prefix}/portfolio`, label: t("nav.portfolio") },
   { href: `${prefix}/blog`, label: t("nav.blog") },
@@ -25,7 +25,16 @@ const navLinks = [
 
 const alternatePath =
   alternateProp ?? getAlternatePath(Astro.url, lang === "sk" ? "en" : "sk");
-const currentPath = Astro.url.pathname;
+
+// Normalize: strip trailing slash (except root "/")
+const normPath = (p: string) => (p === "/" ? p : p.replace(/\/$/, ""));
+const currentPath = normPath(Astro.url.pathname);
+
+function isActive(href: string, exact = false) {
+  const h = normPath(href);
+  if (exact) return currentPath === h;
+  return currentPath === h || currentPath.startsWith(`${h}/`);
+}
 ---
 
 <!-- ── Desktop header (hidden on mobile) ───────────────────── -->
@@ -49,16 +58,14 @@ const currentPath = Astro.url.pathname;
     <div class="flex items-center gap-1">
       <nav class="flex items-center gap-0.5">
         {
-          navLinks.map(({ href, label }) => {
-            const isActive =
-              currentPath === href ||
-              (href !== (prefix || "/") && currentPath.startsWith(href));
+          navLinks.map(({ href, label, exact }) => {
+            const active = isActive(href, exact);
             return (
               <a
                 href={href}
                 class:list={[
                   "px-3 py-1.5 rounded-md text-xs font-mono font-medium tracking-wide transition-all",
-                  isActive
+                  active
                     ? "text-[var(--color-brand-dark)] bg-[var(--color-brand-dark)]/10"
                     : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100/80 dark:hover:bg-white/[0.05]",
                 ]}
@@ -187,27 +194,25 @@ const currentPath = Astro.url.pathname;
   <!-- Nav links centered -->
   <nav class="flex-1 flex flex-col justify-center px-5 gap-1">
     {
-      navLinks.map(({ href, label }) => {
-        const isActive =
-          currentPath === href ||
-          (href !== (prefix || "/") && currentPath.startsWith(href));
+      navLinks.map(({ href, label, exact }) => {
+        const active = isActive(href, exact);
         return (
           <a
             href={href}
             class:list={[
               "fab-nav-link flex items-center px-4 py-4 rounded-2xl transition-all duration-150 active:scale-[0.98]",
-              isActive ? "bg-zinc-200/60 dark:bg-white/[0.07]" : "hover:bg-zinc-100 dark:hover:bg-white/[0.04]",
+              active ? "bg-zinc-200/60 dark:bg-white/[0.07]" : "hover:bg-zinc-100 dark:hover:bg-white/[0.04]",
             ]}
           >
             <span
               class:list={[
                 "text-2xl font-bold font-mono tracking-tight",
-                isActive ? "text-zinc-900 dark:text-white" : "text-zinc-400 dark:text-zinc-500",
+                active ? "text-zinc-900 dark:text-white" : "text-zinc-400 dark:text-zinc-500",
               ]}
             >
               {label}
             </span>
-            {isActive && (
+            {active && (
               <span
                 class="ml-auto w-2 h-2 rounded-full shrink-0"
                 style="background: linear-gradient(135deg, var(--color-brand-dark), var(--color-violet-dark));"
