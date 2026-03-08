@@ -264,7 +264,7 @@ This is the factor costing the last point. On localhost (zero latency) everythin
 | Trailing slash fix | Eliminates 301 redirect (~925 ms) | Done |
 | WCAG contrast (dark + light) | 100% Accessibility | Done |
 | Terminal colors via CSS classes | WCAG AA in both modes | Done |
-| Preconnect to Umami API | Saves ~270 ms LCP | Consider |
+| Preconnect to Umami API | Saves ~270 ms LCP | Done |
 | CDN (Cloudflare/Vercel) | Edge caching, longer cache, Brotli | Consider |
 
 <div class="callout note">

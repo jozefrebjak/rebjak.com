@@ -264,7 +264,7 @@ Toto je faktor, ktorý stojí posledný bod. Na localhost (bez latencie) je vše
 | Trailing slash fix | Eliminuje 301 redirect (~925 ms) | Hotové |
 | WCAG kontrast (dark + light) | 100% Accessibility | Hotové |
 | Terminal farby cez CSS triedy | WCAG AA v oboch režimoch | Hotové |
-| Preconnect na Umami API | Ušetrí ~270 ms LCP | Zvážiť |
+| Preconnect na Umami API | Ušetrí ~270 ms LCP | Hotové |
 | CDN (Cloudflare/Vercel) | Edge caching, dlhší cache, Brotli | Zvážiť |
 
 <div class="callout note">
