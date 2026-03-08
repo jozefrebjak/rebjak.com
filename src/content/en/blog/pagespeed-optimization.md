@@ -223,9 +223,9 @@ After all optimizations:
 | Preset | Performance | Accessibility | Best Practices | SEO |
 |--------|-------------|---------------|----------------|-----|
 | Desktop | **100** | **100** | 100 | 100 |
-| Mobile | **94–95** | **100** | 100 | 100 |
+| Mobile | **99** | **100** | 100 | 100 |
 
-Desktop is at **100/100/100/100**. Mobile Performance jumped from 87 to **94–95** — FCP dropped from 3.0 s to 1.0 s. Accessibility from 94 to **100**.
+Desktop is at **100/100/100/100**. Mobile Performance jumped from 87 to **99** — FCP dropped from 3.0 s to 1.1 s. Accessibility from 94 to **100**.
 
 ## Why mobile isn't 100 in production
 
@@ -235,15 +235,15 @@ The Lighthouse mobile preset isn't just a test — it simulates real-world condi
 
 | Metric | Before | After | Change |
 |--------|--------|-------|--------|
-| First Contentful Paint | 3.0 s | **1.0 s** | –67% |
-| Largest Contentful Paint | 3.0 s | **2.7 s** | –10% |
-| Speed Index | 4.4 s | **3.7 s** | –16% |
+| First Contentful Paint | 3.0 s | **1.1 s** | –63% |
+| Largest Contentful Paint | 3.0 s | **2.1 s** | –30% |
+| Speed Index | 4.4 s | **2.6 s** | –41% |
 | Total Blocking Time | 0 ms | 0 ms | — |
 | Cumulative Layout Shift | 0 | 0 | — |
 
-FCP dropped to a third of the original — that directly means the user sees content almost instantly. TBT 0 and CLS 0 mean the page is immediately functional once loaded and nothing jumps around.
+FCP dropped to a third of the original — the user sees content almost instantly. LCP from 3.0 s to 2.1 s means the main content is fully rendered in ~2 seconds. TBT 0 and CLS 0 — the page is immediately functional and nothing jumps around.
 
-### What still holds it back: GitHub Pages limitations
+### What still holds it back: the last point on GitHub Pages
 
 GitHub Pages has hard limits you can't work around:
 
@@ -253,7 +253,7 @@ GitHub Pages has hard limits you can't work around:
 
 **No compression control** — you can't configure Brotli compression instead of gzip, or optimize response headers.
 
-These are the factors costing the remaining 5–6 points. On localhost (zero latency) everything is 100/100 — the production penalty is purely network-related.
+This is the factor costing the last point. On localhost (zero latency) everything is 100/100 — the production penalty is purely network-related.
 
 ### Optimization summary
 
@@ -263,14 +263,15 @@ These are the factors costing the remaining 5–6 points. On localhost (zero lat
 | Font subsetting | –73% font size (286 → 77 KB) | Done |
 | Trailing slash fix | Eliminates 301 redirect (~925 ms) | Done |
 | WCAG contrast (dark + light) | 100% Accessibility | Done |
+| Terminal colors via CSS classes | WCAG AA in both modes | Done |
+| Preconnect to Umami API | Saves ~270 ms LCP | Consider |
 | CDN (Cloudflare/Vercel) | Edge caching, longer cache, Brotli | Consider |
-| Inline critical CSS | Eliminates render-blocking Astro CSS | Consider |
 
 <div class="callout note">
 
-For a static site on GitHub Pages, **Performance 94–95 on mobile** is a very solid result. The page loads in ~1 second to first paint and ~2.7 s fully on simulated slow 4G. No JavaScript blocks interaction, no layout shift.
+For a static site on GitHub Pages, **Performance 99 on mobile** is an excellent result. The page loads in ~1.1 seconds to first paint and ~2.1 s fully on simulated slow 4G. No JavaScript blocks interaction, no layout shift.
 
-The last 5–6 points to 100 would come from a CDN with edge caching and longer cache headers — that's an infrastructure decision, not a code one.
+The last point to 100 would come from a CDN with edge caching and longer cache headers — that's an infrastructure decision, not a code one.
 
 </div>
 

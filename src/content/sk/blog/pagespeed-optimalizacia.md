@@ -223,9 +223,9 @@ Po všetkých optimalizáciách:
 | Preset | Performance | Accessibility | Best Practices | SEO |
 |--------|-------------|---------------|----------------|-----|
 | Desktop | **100** | **100** | 100 | 100 |
-| Mobile | **94–95** | **100** | 100 | 100 |
+| Mobile | **99** | **100** | 100 | 100 |
 
-Desktop je na **100/100/100/100**. Mobile Performance skočil z 87 na **94–95** — FCP klesol z 3.0 s na 1.0 s. Accessibility z 94 na **100**.
+Desktop je na **100/100/100/100**. Mobile Performance skočil z 87 na **99** — FCP klesol z 3.0 s na 1.1 s. Accessibility z 94 na **100**.
 
 ## Prečo mobile nie je 100 na produkcii
 
@@ -235,15 +235,15 @@ Lighthouse mobile preset nie je len test — simuluje reálne podmienky, s akým
 
 | Metrika | Pred | Po | Zmena |
 |---------|------|-----|-------|
-| First Contentful Paint | 3.0 s | **1.0 s** | –67% |
-| Largest Contentful Paint | 3.0 s | **2.7 s** | –10% |
-| Speed Index | 4.4 s | **3.7 s** | –16% |
+| First Contentful Paint | 3.0 s | **1.1 s** | –63% |
+| Largest Contentful Paint | 3.0 s | **2.1 s** | –30% |
+| Speed Index | 4.4 s | **2.6 s** | –41% |
 | Total Blocking Time | 0 ms | 0 ms | — |
 | Cumulative Layout Shift | 0 | 0 | — |
 
-FCP klesol na tretinu — to priamo znamená, že používateľ vidí obsah takmer okamžite. TBT 0 a CLS 0 znamenajú, že po načítaní je stránka okamžite funkčná a nič neskáče.
+FCP klesol na tretinu — používateľ vidí obsah takmer okamžite. LCP z 3.0 s na 2.1 s znamená, že hlavný obsah je kompletne vykreslený za ~2 sekundy. TBT 0 a CLS 0 — stránka je okamžite funkčná a nič neskáče.
 
-### Čo stále brzdí: limity GitHub Pages
+### Čo stále brzdí: posledný bod na GitHub Pages
 
 GitHub Pages má tvrdé limity, ktoré nedokážete obísť:
 
@@ -253,7 +253,7 @@ GitHub Pages má tvrdé limity, ktoré nedokážete obísť:
 
 **Žiadna kompresia kontrola** — nemôžete nastaviť Brotli kompresiu namiesto gzip, ani optimalizovať response hlavičky.
 
-Toto sú faktory, ktoré stoja zvyšných 5–6 bodov. Na localhost (bez latencie) je všetko 100/100 — produkčná penalizácia je čisto sieťová.
+Toto je faktor, ktorý stojí posledný bod. Na localhost (bez latencie) je všetko 100/100 — produkčná penalizácia je čisto sieťová.
 
 ### Prehľad optimalizácií
 
@@ -263,14 +263,15 @@ Toto sú faktory, ktoré stoja zvyšných 5–6 bodov. Na localhost (bez latenci
 | Font subsetting | –73% veľkosť fontov (286 → 77 KB) | Hotové |
 | Trailing slash fix | Eliminuje 301 redirect (~925 ms) | Hotové |
 | WCAG kontrast (dark + light) | 100% Accessibility | Hotové |
+| Terminal farby cez CSS triedy | WCAG AA v oboch režimoch | Hotové |
+| Preconnect na Umami API | Ušetrí ~270 ms LCP | Zvážiť |
 | CDN (Cloudflare/Vercel) | Edge caching, dlhší cache, Brotli | Zvážiť |
-| Inline critical CSS | Eliminuje render-blocking Astro CSS | Zvážiť |
 
 <div class="callout note">
 
-Pre statický web na GitHub Pages je **Performance 94–95 na mobile** veľmi dobrý výsledok. Stránka sa na simulovanom pomalom 4G načíta za ~1 sekundu do prvého vykreslenia a za ~2.7 s kompletne. Žiadny JavaScript neblokuje interakciu, žiadny layout shift.
+Pre statický web na GitHub Pages je **Performance 99 na mobile** vynikajúci výsledok. Stránka sa na simulovanom pomalom 4G načíta za ~1.1 sekundy do prvého vykreslenia a za ~2.1 s kompletne. Žiadny JavaScript neblokuje interakciu, žiadny layout shift.
 
-Posledných 5–6 bodov k 100 by priniesol CDN s edge cachingom a dlhšími cache hlavičkami — to je však rozhodnutie o infraštruktúre, nie o kóde.
+Posledný bod k 100 by priniesol CDN s edge cachingom a dlhšími cache hlavičkami — to je však rozhodnutie o infraštruktúre, nie o kóde.
 
 </div>
 
