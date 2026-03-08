@@ -2,8 +2,8 @@
 title: 'PageSpeed optimization and GitHub Pages limitations'
 description: 'Lighthouse showed Performance 87 on mobile. Self-hosted fonts, WCAG contrast, trailing slash — and why GitHub Pages cache headers prevent reaching 100. Building in public, part four.'
 pubDate: 2026-03-08T10:00:00
-tags: ['astro', 'performance', 'building-in-public']
-draft: true
+tags: ['astro', 'performance', 'github-pages', 'building-in-public']
+draft: false
 ---
 
 The site has SEO at 100, Best Practices at 100 — but Performance at 87 and Accessibility at 94. Lighthouse clearly showed what needed fixing.
@@ -19,55 +19,80 @@ After running [PageSpeed Insights](https://pagespeed.web.dev/) on `rebjak.com/en
 | Best Practices | 100 |
 | SEO | 100 |
 
-Four main issues:
+Three main issues:
 
-1. **Render-blocking Google Fonts** — ~2000 ms savings available
-2. **Insufficient color contrast** — WCAG AA failure
+1. **Google Fonts** — render-blocking + external requests, ~2000 ms savings available
+2. **Insufficient color contrast** — WCAG AA failure in both dark and light mode
 3. **Trailing slash redirect** — `/en` → `/en/` costs ~925 ms
-4. **External font requests** — DNS + TLS handshake on every visit
 
-## 1. Render-blocking fonts
+## 1. Google Fonts → self-hosting
 
 ### Problem
 
 A standard `<link rel="stylesheet">` for Google Fonts blocks rendering of the entire page until the font CSS is downloaded. On slower connections, that means a white screen for an extra 1-2 seconds.
 
+Even if you fix the render-blocking with `preload`, fonts are still downloaded from external servers (`fonts.googleapis.com`, `fonts.gstatic.com`). Each external request means:
+
+- **DNS lookup** — the browser needs to resolve the domain to an IP address
+- **TCP + TLS handshake** — a new connection for each server
+- **No control over caching** — Google sets its own cache headers
+
+On mobile (simulated slow 4G with 150 ms RTT), this adds hundreds of milliseconds on every first load.
+
+Google Fonts serves Inter as a variable font weighing **230 KB** and JetBrains Mono at **56 KB** — totaling **286 KB** over external servers.
+
 ### Solution
 
-First step — I replaced the render-blocking link with a non-blocking `preload` + `onload` swap pattern:
+I downloaded the fonts and subsetted them using `pyftsubset` (from the `fonttools` library) to Latin + Latin Extended-A (U+0000-017F) — covering both English and Slovak (č, š, ž, ľ, ď, ť, ň and more).
 
-```html
-<!-- Before: render-blocking -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter..." />
-
-<!-- After: non-blocking -->
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link
-  rel="preload"
-  as="style"
-  href="https://fonts.googleapis.com/css2?family=Inter..."
-  onload="this.onload=null;this.rel='stylesheet'"
-/>
-<noscript>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter..." />
-</noscript>
+```bash
+pyftsubset inter-latin.woff2 \
+  --output-file=inter-latin.woff2 \
+  --flavor=woff2 \
+  --layout-features='kern,liga,clig,calt' \
+  --unicodes="U+0000-017F,U+2000-206F,U+20AC"
 ```
 
-How it works:
+The resulting sizes:
 
-- `preload` downloads the CSS in the background without blocking render
-- `onload` switches `rel` to `stylesheet` after download, applying the fonts
-- `this.onload=null` prevents repeated calls
-- `<noscript>` provides a fallback when JavaScript is disabled
+| Font | Before (Google) | After (subset) | Savings |
+|------|----------------|----------------|---------|
+| Inter | 230 KB | 45 KB | –80% |
+| JetBrains Mono | 56 KB | 32 KB | –43% |
+| **Total** | **286 KB** | **77 KB** | **–73%** |
 
-<div class="callout note">
+In `global.css`, I added `@font-face` declarations:
 
-**preconnect** opens a TCP + TLS connection to the font server before the browser even knows it will need the fonts. This saves ~100-200 ms on the first request.
+```css
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400 700;
+    font-display: swap;
+    src: url('/fonts/inter-latin.woff2') format('woff2');
+    unicode-range: U+0000-017F, U+2000-206F, U+20AC;
+}
+```
+
+And in `BaseLayout.astro`, I replaced all Google Fonts links with simple `preload` declarations:
+
+```html
+<!-- Before: 4 links to external servers -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?..." onload="..." />
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?..." /></noscript>
+
+<!-- After: 2 preload links to own server -->
+<link rel="preload" as="font" type="font/woff2" href="/fonts/inter-latin.woff2" crossorigin />
+<link rel="preload" as="font" type="font/woff2" href="/fonts/jetbrains-mono-latin.woff2" crossorigin />
+```
+
+<div class="callout tip">
+
+**font-display: swap** shows text immediately with a fallback font (system-ui) and switches to Inter/JetBrains Mono once loaded. The user sees content right away — the font swap happens without noticeable flashing.
 
 </div>
-
-This fixed the render-blocking issue, but fonts were still being downloaded from external servers. I'll come back to that in section 4.
 
 ## 2. Color contrast (WCAG)
 
@@ -155,73 +180,6 @@ Same for dynamic links:
 
 In total, I updated links across 12 files — homepages, blog lists, tag pages, slug pages, and the Header component navigation.
 
-## 4. Self-hosting fonts
-
-### Problem
-
-Even after the preload optimization, fonts were still being downloaded from `fonts.googleapis.com` and `fonts.gstatic.com`. Each external request means:
-
-- **DNS lookup** — the browser needs to resolve the domain to an IP address
-- **TCP + TLS handshake** — a new connection for each server
-- **No control over caching** — Google sets its own cache headers
-
-On mobile (simulated slow 4G with 150 ms RTT), this adds hundreds of milliseconds on every first load.
-
-Google Fonts serves Inter as a variable font weighing **230 KB** and JetBrains Mono at **56 KB** — totaling **286 KB** over external servers.
-
-### Solution
-
-I downloaded the fonts and subsetted them using `pyftsubset` (from the `fonttools` library) to Latin + Latin Extended-A (U+0000-017F) — covering both English and Slovak (č, š, ž, ľ, ď, ť, ň and more).
-
-```bash
-pyftsubset inter-latin.woff2 \
-  --output-file=inter-latin.woff2 \
-  --flavor=woff2 \
-  --layout-features='kern,liga,clig,calt' \
-  --unicodes="U+0000-017F,U+2000-206F,U+20AC"
-```
-
-The resulting sizes:
-
-| Font | Before (Google) | After (subset) | Savings |
-|------|----------------|----------------|---------|
-| Inter | 230 KB | 45 KB | –80% |
-| JetBrains Mono | 56 KB | 32 KB | –43% |
-| **Total** | **286 KB** | **77 KB** | **–73%** |
-
-In `global.css`, I added `@font-face` declarations:
-
-```css
-@font-face {
-    font-family: 'Inter';
-    font-style: normal;
-    font-weight: 400 700;
-    font-display: swap;
-    src: url('/fonts/inter-latin.woff2') format('woff2');
-    unicode-range: U+0000-017F, U+2000-206F, U+20AC;
-}
-```
-
-And in `BaseLayout.astro`, I replaced all Google Fonts links with simple `preload` declarations:
-
-```html
-<!-- Before: 4 links to external servers -->
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?..." onload="..." />
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?..." /></noscript>
-
-<!-- After: 2 preload links to own server -->
-<link rel="preload" as="font" type="font/woff2" href="/fonts/inter-latin.woff2" crossorigin />
-<link rel="preload" as="font" type="font/woff2" href="/fonts/jetbrains-mono-latin.woff2" crossorigin />
-```
-
-<div class="callout tip">
-
-**font-display: swap** shows text immediately with a fallback font (system-ui) and switches to Inter/JetBrains Mono once loaded. The user sees content right away — the font swap happens without noticeable flashing.
-
-</div>
-
 ## Result
 
 <details>
@@ -253,21 +211,21 @@ npx lighthouse http://localhost:4444/en/ \
 
 A local 100 isn't the full story. Lighthouse on the production server tests with real network latency — and the mobile preset simulates **slow 4G** (1.6 Mbps, 150 ms RTT).
 
-Before self-hosting fonts, production looked like this:
+Before optimization:
 
 | Preset | Performance | Accessibility | Best Practices | SEO |
 |--------|-------------|---------------|----------------|-----|
-| Desktop | 97 | 100 | 100 | 100 |
-| Mobile | 87 | 100 | 100 | 100 |
+| Desktop | 97 | 94 | 100 | 100 |
+| Mobile | 87 | 94 | 100 | 100 |
 
-After self-hosting and subsetting:
+After all optimizations:
 
 | Preset | Performance | Accessibility | Best Practices | SEO |
 |--------|-------------|---------------|----------------|-----|
-| Desktop | **100** | 100 | 100 | 100 |
-| Mobile | **94–95** | 100 | 100 | 100 |
+| Desktop | **100** | **100** | 100 | 100 |
+| Mobile | **94–95** | **100** | 100 | 100 |
 
-Desktop is at **100**. Mobile jumped from 87 to **94–95** — FCP dropped from 3.0 s to 1.0 s. That's a massive improvement, but still not 100. Why?
+Desktop is at **100/100/100/100**. Mobile Performance jumped from 87 to **94–95** — FCP dropped from 3.0 s to 1.0 s. Accessibility from 94 to **100**.
 
 ## Why mobile isn't 100 in production
 
@@ -304,7 +262,6 @@ These are the factors costing the remaining 5–6 points. On localhost (zero lat
 | Self-hosting fonts | Eliminates 3 external requests | Done |
 | Font subsetting | –73% font size (286 → 77 KB) | Done |
 | Trailing slash fix | Eliminates 301 redirect (~925 ms) | Done |
-| Non-blocking font loading | Eliminates render-blocking CSS | Done |
 | WCAG contrast (dark + light) | 100% Accessibility | Done |
 | CDN (Cloudflare/Vercel) | Edge caching, longer cache, Brotli | Consider |
 | Inline critical CSS | Eliminates render-blocking Astro CSS | Consider |

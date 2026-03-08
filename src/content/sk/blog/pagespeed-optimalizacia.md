@@ -2,8 +2,8 @@
 title: 'PageSpeed optimalizácia a limity GitHub Pages'
 description: 'Lighthouse ukázal Performance 87 na mobile. Self-hosting fontov, WCAG kontrast, trailing slash — a prečo GitHub Pages cache hlavičky bránia dosiahnuť 100. Building in public, štvrtý diel.'
 pubDate: 2026-03-08T10:00:00
-tags: ['astro', 'performance', 'building-in-public']
-draft: true
+tags: ['astro', 'performance', 'github-pages', 'building-in-public']
+draft: false
 ---
 
 Web má SEO na 100, Best Practices na 100 — ale Performance 87 a Accessibility 94. Lighthouse jasne ukázal, čo treba opraviť.
@@ -19,55 +19,80 @@ Po spustení [PageSpeed Insights](https://pagespeed.web.dev/) na `rebjak.com/en`
 | Best Practices | 100 |
 | SEO | 100 |
 
-Štyri hlavné problémy:
+Tri hlavné problémy:
 
-1. **Render-blocking Google Fonts** — ušetriteľných ~2000 ms
-2. **Nedostatočný farebný kontrast** — WCAG AA zlyhanie
+1. **Google Fonts** — render-blocking + externé requesty, ušetriteľných ~2000 ms
+2. **Nedostatočný farebný kontrast** — WCAG AA zlyhanie v dark aj light mode
 3. **Trailing slash redirect** — `/en` → `/en/` stojí ~925 ms
-4. **Externé font requesty** — DNS + TLS handshake na každý návštev
 
-## 1. Render-blocking fonty
+## 1. Google Fonts → self-hosting
 
 ### Problém
 
 Klasický `<link rel="stylesheet">` na Google Fonts blokuje renderovanie celej stránky, kým sa font CSS nestiahne. Na pomalšom pripojení to znamená bielu obrazovku na 1-2 sekundy navyše.
 
+Aj keď sa render-blocking vyrieši cez `preload`, fonty sa stále sťahujú z externých serverov (`fonts.googleapis.com`, `fonts.gstatic.com`). Každý externý request znamená:
+
+- **DNS lookup** — prehliadač musí preložiť doménu na IP adresu
+- **TCP + TLS handshake** — nové spojenie pre každý server
+- **Žiadna kontrola nad cachingom** — Google nastavuje vlastné cache hlavičky
+
+Na mobile (simulované pomalé 4G s 150 ms RTT) to pridáva stovky milisekúnd navyše pri každom prvom načítaní.
+
+Google Fonts servuje Inter ako variable font s veľkosťou **230 KB** a JetBrains Mono **56 KB** — spolu **286 KB** cez externé servery.
+
 ### Riešenie
 
-Prvý krok — nahradil som render-blocking link za non-blocking `preload` + `onload` swap pattern:
+Stiahol som fonty a subsettoval ich pomocou `pyftsubset` (z knižnice `fonttools`) na Latin + Latin Extended-A (U+0000-017F) — pokrýva angličtinu aj slovenčinu (č, š, ž, ľ, ď, ť, ň a ďalšie).
 
-```html
-<!-- Pred: render-blocking -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter..." />
-
-<!-- Po: non-blocking -->
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link
-  rel="preload"
-  as="style"
-  href="https://fonts.googleapis.com/css2?family=Inter..."
-  onload="this.onload=null;this.rel='stylesheet'"
-/>
-<noscript>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter..." />
-</noscript>
+```bash
+pyftsubset inter-latin.woff2 \
+  --output-file=inter-latin.woff2 \
+  --flavor=woff2 \
+  --layout-features='kern,liga,clig,calt' \
+  --unicodes="U+0000-017F,U+2000-206F,U+20AC"
 ```
 
-Ako to funguje:
+Výsledné veľkosti:
 
-- `preload` stiahne CSS na pozadí bez blokovania renderu
-- `onload` po stiahnutí prepne `rel` na `stylesheet` a aplikuje fonty
-- `this.onload=null` zabráni opakovanému volaniu
-- `<noscript>` fallback pre prípad, keď je JavaScript vypnutý
+| Font | Pred (Google) | Po (subset) | Úspora |
+|------|--------------|-------------|--------|
+| Inter | 230 KB | 45 KB | –80% |
+| JetBrains Mono | 56 KB | 32 KB | –43% |
+| **Spolu** | **286 KB** | **77 KB** | **–73%** |
 
-<div class="callout note">
+V `global.css` som pridal `@font-face` deklarácie:
 
-**preconnect** otvára TCP + TLS spojenie na font server ešte pred tým, ako prehliadač vie, že bude potrebovať fonty. Ušetrí to ~100-200 ms pri prvom requeste.
+```css
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400 700;
+    font-display: swap;
+    src: url('/fonts/inter-latin.woff2') format('woff2');
+    unicode-range: U+0000-017F, U+2000-206F, U+20AC;
+}
+```
+
+A v `BaseLayout.astro` nahradil všetky Google Fonts linky jednoduchou `preload` deklaráciou:
+
+```html
+<!-- Pred: 4 linky na externé servery -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?..." onload="..." />
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?..." /></noscript>
+
+<!-- Po: 2 preload linky na vlastný server -->
+<link rel="preload" as="font" type="font/woff2" href="/fonts/inter-latin.woff2" crossorigin />
+<link rel="preload" as="font" type="font/woff2" href="/fonts/jetbrains-mono-latin.woff2" crossorigin />
+```
+
+<div class="callout tip">
+
+**font-display: swap** zobrazí text okamžite s fallback fontom (system-ui) a prepne na Inter/JetBrains Mono po načítaní. Používateľ vidí obsah hneď — font sa vymení bez viditeľného bliknutia.
 
 </div>
-
-Toto vyriešilo render-blocking problém, ale fonty sa stále sťahovali z externých serverov. K tomu sa vrátim v bode 4.
 
 ## 2. Farebný kontrast (WCAG)
 
@@ -155,73 +180,6 @@ To isté pre dynamické linky:
 
 Celkovo som opravil linky v 12 súboroch — homepage, blog listy, tag stránky, slug stránky a navigáciu v Header komponente.
 
-## 4. Self-hosting fontov
-
-### Problém
-
-Aj po preload optimalizácii sa fonty sťahovali z `fonts.googleapis.com` a `fonts.gstatic.com`. Každý externý request znamená:
-
-- **DNS lookup** — prehliadač musí preložiť doménu na IP adresu
-- **TCP + TLS handshake** — nové spojenie pre každý server
-- **Žiadna kontrola nad cachingom** — Google nastavuje vlastné cache hlavičky
-
-Na mobile (simulované pomalé 4G s 150 ms RTT) to pridáva stovky milisekúnd navyše pri každom prvom načítaní.
-
-Google Fonts servuje Inter ako variable font s veľkosťou **230 KB** a JetBrains Mono **56 KB** — spolu **286 KB** cez externé servery.
-
-### Riešenie
-
-Stiahol som fonty a subsettoval ich pomocou `pyftsubset` (z knižnice `fonttools`) na Latin + Latin Extended-A (U+0000-017F) — pokrýva angličtinu aj slovenčinu (č, š, ž, ľ, ď, ť, ň a ďalšie).
-
-```bash
-pyftsubset inter-latin.woff2 \
-  --output-file=inter-latin.woff2 \
-  --flavor=woff2 \
-  --layout-features='kern,liga,clig,calt' \
-  --unicodes="U+0000-017F,U+2000-206F,U+20AC"
-```
-
-Výsledné veľkosti:
-
-| Font | Pred (Google) | Po (subset) | Úspora |
-|------|--------------|-------------|--------|
-| Inter | 230 KB | 45 KB | –80% |
-| JetBrains Mono | 56 KB | 32 KB | –43% |
-| **Spolu** | **286 KB** | **77 KB** | **–73%** |
-
-V `global.css` som pridal `@font-face` deklarácie:
-
-```css
-@font-face {
-    font-family: 'Inter';
-    font-style: normal;
-    font-weight: 400 700;
-    font-display: swap;
-    src: url('/fonts/inter-latin.woff2') format('woff2');
-    unicode-range: U+0000-017F, U+2000-206F, U+20AC;
-}
-```
-
-A v `BaseLayout.astro` nahradil všetky Google Fonts linky jednoduchou `preload` deklaráciou:
-
-```html
-<!-- Pred: 4 linky na externé servery -->
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?..." onload="..." />
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?..." /></noscript>
-
-<!-- Po: 2 preload linky na vlastný server -->
-<link rel="preload" as="font" type="font/woff2" href="/fonts/inter-latin.woff2" crossorigin />
-<link rel="preload" as="font" type="font/woff2" href="/fonts/jetbrains-mono-latin.woff2" crossorigin />
-```
-
-<div class="callout tip">
-
-**font-display: swap** zobrazí text okamžite s fallback fontom (system-ui) a prepne na Inter/JetBrains Mono po načítaní. Používateľ vidí obsah hneď — font sa vymení bez viditeľného bliknutia.
-
-</div>
-
 ## Výsledok
 
 <details>
@@ -253,21 +211,21 @@ npx lighthouse http://localhost:4444/en/ \
 
 Lokálne 100 nie je celý príbeh. Lighthouse na produkčnom serveri testuje s reálnou sieťovou latenciou — a mobile preset simuluje **pomalé 4G** (1.6 Mbps, 150 ms RTT).
 
-Pred self-hostingom fontov vyzerala produkcia takto:
+Pred optimalizáciou:
 
 | Preset | Performance | Accessibility | Best Practices | SEO |
 |--------|-------------|---------------|----------------|-----|
-| Desktop | 97 | 100 | 100 | 100 |
-| Mobile | 87 | 100 | 100 | 100 |
+| Desktop | 97 | 94 | 100 | 100 |
+| Mobile | 87 | 94 | 100 | 100 |
 
-Po self-hostingu a subsettingu:
+Po všetkých optimalizáciách:
 
 | Preset | Performance | Accessibility | Best Practices | SEO |
 |--------|-------------|---------------|----------------|-----|
-| Desktop | **100** | 100 | 100 | 100 |
-| Mobile | **94–95** | 100 | 100 | 100 |
+| Desktop | **100** | **100** | 100 | 100 |
+| Mobile | **94–95** | **100** | 100 | 100 |
 
-Desktop je na **100**. Mobile skočil z 87 na **94–95** — FCP klesol z 3.0 s na 1.0 s. To je obrovský rozdiel, ale stále nie 100. Prečo?
+Desktop je na **100/100/100/100**. Mobile Performance skočil z 87 na **94–95** — FCP klesol z 3.0 s na 1.0 s. Accessibility z 94 na **100**.
 
 ## Prečo mobile nie je 100 na produkcii
 
@@ -304,7 +262,6 @@ Toto sú faktory, ktoré stoja zvyšných 5–6 bodov. Na localhost (bez latenci
 | Self-hosting fontov | Eliminuje 3 externé requesty | Hotové |
 | Font subsetting | –73% veľkosť fontov (286 → 77 KB) | Hotové |
 | Trailing slash fix | Eliminuje 301 redirect (~925 ms) | Hotové |
-| Non-blocking font loading | Eliminuje render-blocking CSS | Hotové |
 | WCAG kontrast (dark + light) | 100% Accessibility | Hotové |
 | CDN (Cloudflare/Vercel) | Edge caching, dlhší cache, Brotli | Zvážiť |
 | Inline critical CSS | Eliminuje render-blocking Astro CSS | Zvážiť |
