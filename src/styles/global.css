@@ -280,4 +280,15 @@
     .glass {
         @apply bg-white/70 dark:bg-white/[0.03] border border-zinc-200/80 dark:border-white/[0.06] backdrop-blur-sm;
     }
+
+    /* ── Terminal colors (WCAG AA in both modes) ── */
+    .term-green { color: #047857; }       /* emerald-700 — 5.21:1 on white */
+    .term-violet { color: #7c3aed; }      /* violet-600 — 5.41:1 on white */
+    .term-blue { color: #2563eb; font-weight: 600; }  /* blue-600 — 4.91:1 on white */
+    .term-red { color: #dc2626; }         /* red-600 — 4.58:1 on white */
+
+    .dark .term-green { color: #34d39a; } /* emerald-400 — 10.2:1 on dark */
+    .dark .term-violet { color: #a78bfa; } /* violet-400 — 7.2:1 on dark */
+    .dark .term-blue { color: #29b6f6; }  /* light-blue — 8.5:1 on dark */
+    .dark .term-red { color: #f87171; }   /* red-400 — 7.1:1 on dark */
 }
