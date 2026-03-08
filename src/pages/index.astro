@@ -316,12 +316,12 @@ const isSk = lang === "sk";
   if (out) {
     // starship-style prompt line
     function prompt(dir: string, branch: string, dur?: string, exitOk = true) {
-      const dirPart = `<span style="color:#29b6f6;font-weight:600"> ${dir}</span>`;
-      const gitPart = `<span style="color:#a78bfa"> <span style="opacity:.6"></span> ${branch}</span>`;
+      const dirPart = `<span class="term-blue"> ${dir}</span>`;
+      const gitPart = `<span class="term-violet"> <span style="opacity:.6"></span> ${branch}</span>`;
       const durPart = dur ? `<span class="term-out"> ${dur}</span>` : "";
       const arrow = exitOk
-        ? `<span style="color:#34d39a">❯</span>`
-        : `<span style="color:#f87171">❯</span>`;
+        ? `<span class="term-green">❯</span>`
+        : `<span class="term-red">❯</span>`;
       return `<div>${dirPart}${gitPart}${durPart}</div><div>${arrow} `;
     }
 
@@ -331,7 +331,7 @@ const isSk = lang === "sk";
       {
         delay: 620,
         type: "out",
-        text: ' up <span style="color:#34d39a">312d 4h</span>  load: <span style="color:#34d39a">0.12</span>',
+        text: ' up <span class="term-green">312d 4h</span>  load: <span class="term-green">0.12</span>',
       },
 
       {
@@ -349,27 +349,27 @@ const isSk = lang === "sk";
       {
         delay: 1500,
         type: "out",
-        text: '<span style="color:#34d39a">●</span> powerdns      Up 12 days',
+        text: '<span class="term-green">●</span> powerdns      Up 12 days',
       },
       {
         delay: 1620,
         type: "out",
-        text: '<span style="color:#34d39a">●</span> kea-dhcp4     Up 12 days',
+        text: '<span class="term-green">●</span> kea-dhcp4     Up 12 days',
       },
       {
         delay: 1740,
         type: "out",
-        text: '<span style="color:#34d39a">●</span> prometheus    Up 12 days',
+        text: '<span class="term-green">●</span> prometheus    Up 12 days',
       },
       {
         delay: 1860,
         type: "out",
-        text: '<span style="color:#34d39a">●</span> grafana       Up 12 days',
+        text: '<span class="term-green">●</span> grafana       Up 12 days',
       },
       {
         delay: 1980,
         type: "out",
-        text: '<span style="color:#34d39a">●</span> alertmanager  Up 12 days',
+        text: '<span class="term-green">●</span> alertmanager  Up 12 days',
       },
 
       {
@@ -392,7 +392,7 @@ const isSk = lang === "sk";
       {
         delay: 2980,
         type: "out",
-        text: 'TASK [deploy : sync config]  <span style="color:#34d39a">ok=9</span>  <span style="color:#a78bfa">changed=2</span>  failed=<span style="color:#34d39a">0</span>',
+        text: 'TASK [deploy : sync config]  <span class="term-green">ok=9</span>  <span class="term-violet">changed=2</span>  failed=<span class="term-green">0</span>',
       },
 
       {
@@ -406,7 +406,7 @@ const isSk = lang === "sk";
       {
         delay: 3820,
         type: "out",
-        text: 'rtt min/avg/max = <span style="color:#34d39a">3.9/4.1/4.3 ms</span>',
+        text: 'rtt min/avg/max = <span class="term-green">3.9/4.1/4.3 ms</span>',
       },
 
       {
