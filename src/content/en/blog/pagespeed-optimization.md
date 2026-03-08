@@ -1,6 +1,6 @@
 ---
-title: 'PageSpeed optimization and GitHub Pages limitations'
-description: 'Lighthouse showed Performance 87 on mobile. Self-hosted fonts, WCAG contrast, trailing slash — and why GitHub Pages cache headers prevent reaching 100. Building in public, part four.'
+title: 'PageSpeed 100 on GitHub Pages — from 87 to a perfect score'
+description: 'Lighthouse showed Performance 87 on mobile. Self-hosted fonts, WCAG contrast, trailing slash — and how to reach 100/100/100/100 even on GitHub Pages. Building in public, part four.'
 pubDate: 2026-03-08T10:00:00
 tags: ['astro', 'performance', 'github-pages', 'building-in-public']
 draft: false
@@ -223,15 +223,13 @@ After all optimizations:
 | Preset | Performance | Accessibility | Best Practices | SEO |
 |--------|-------------|---------------|----------------|-----|
 | Desktop | **100** | **100** | 100 | 100 |
-| Mobile | **99** | **100** | 100 | 100 |
+| Mobile | **100** | **100** | 100 | 100 |
 
-Desktop is at **100/100/100/100**. Mobile Performance jumped from 87 to **99** — FCP dropped from 3.0 s to 1.1 s. Accessibility from 94 to **100**.
+**100/100/100/100** on both desktop and mobile. Performance jumped from 87 to **100** — FCP dropped from 3.0 s to 1.1 s, LCP from 3.0 s to 2.1 s. Accessibility from 94 to **100**.
 
-## Why mobile isn't 100 in production
+### Before and after metrics (mobile)
 
-The Lighthouse mobile preset isn't just a test — it simulates real-world conditions that many people face on slower mobile connections. And there are plenty of them: according to Google's [Think with Google](https://www.thinkwithgoogle.com/marketing-strategies/app-and-mobile/mobile-page-speed-new-industry-benchmarks/), **53% of mobile visitors abandon a site that takes more than 3 seconds to load**.
-
-### What we managed to optimize
+The Lighthouse mobile preset simulates real-world conditions — **slow 4G** (1.6 Mbps, 150 ms RTT) on a Moto G Power device. According to Google's [Think with Google](https://www.thinkwithgoogle.com/marketing-strategies/app-and-mobile/mobile-page-speed-new-industry-benchmarks/), **53% of mobile visitors abandon a site that takes more than 3 seconds to load**.
 
 | Metric | Before | After | Change |
 |--------|--------|-------|--------|
@@ -243,18 +241,6 @@ The Lighthouse mobile preset isn't just a test — it simulates real-world condi
 
 FCP dropped to a third of the original — the user sees content almost instantly. LCP from 3.0 s to 2.1 s means the main content is fully rendered in ~2 seconds. TBT 0 and CLS 0 — the page is immediately functional and nothing jumps around.
 
-### What still holds it back: the last point on GitHub Pages
-
-GitHub Pages has hard limits you can't work around:
-
-**Cache headers** — GitHub Pages sets `Cache-Control: max-age=600` (10 minutes) for **all** static assets. Even for files with hashed names (e.g. `_page_.DYzwY8gP.css`) that should ideally have `max-age=31536000` (1 year) with the `immutable` flag. You have no control over this — GitHub Pages doesn't support custom cache headers.
-
-**No edge caching** — content is served from a single region. CDNs like Cloudflare or Vercel have edge nodes worldwide and serve from the closest server.
-
-**No compression control** — you can't configure Brotli compression instead of gzip, or optimize response headers.
-
-This is the factor costing the last point. On localhost (zero latency) everything is 100/100 — the production penalty is purely network-related.
-
 ### Optimization summary
 
 | Optimization | Impact | Status |
@@ -265,13 +251,20 @@ This is the factor costing the last point. On localhost (zero latency) everythin
 | WCAG contrast (dark + light) | 100% Accessibility | Done |
 | Terminal colors via CSS classes | WCAG AA in both modes | Done |
 | Preconnect to Umami API | Saves ~270 ms LCP | Done |
-| CDN (Cloudflare/Vercel) | Edge caching, longer cache, Brotli | Consider |
+
+## GitHub Pages limitations — what to watch out for
+
+Even though we achieved 100, GitHub Pages has hard limits that can affect larger sites:
+
+**Cache headers** — GitHub Pages sets `Cache-Control: max-age=600` (10 minutes) for **all** static assets. Even for files with hashed names (e.g. `_page_.DYzwY8gP.css`) that should ideally have `max-age=31536000` (1 year) with the `immutable` flag. You have no control over this — GitHub Pages doesn't support custom cache headers.
+
+**No edge caching** — content is served from a single region. CDNs like Cloudflare or Vercel have edge nodes worldwide and serve from the closest server.
+
+**No compression control** — you can't configure Brotli compression instead of gzip, or optimize response headers.
 
 <div class="callout note">
 
-For a static site on GitHub Pages, **Performance 99 on mobile** is an excellent result. The page loads in ~1.1 seconds to first paint and ~2.1 s fully on simulated slow 4G. No JavaScript blocks interaction, no layout shift.
-
-The last point to 100 would come from a CDN with edge caching and longer cache headers — that's an infrastructure decision, not a code one.
+For a small static site without large images, you can achieve **100/100/100/100 even on GitHub Pages**. For larger sites with more assets, these limits could cost points — that's when a CDN like Cloudflare or migrating to Vercel/Netlify is worth considering.
 
 </div>
 

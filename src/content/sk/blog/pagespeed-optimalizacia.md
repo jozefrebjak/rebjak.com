@@ -1,6 +1,6 @@
 ---
-title: 'PageSpeed optimalizácia a limity GitHub Pages'
-description: 'Lighthouse ukázal Performance 87 na mobile. Self-hosting fontov, WCAG kontrast, trailing slash — a prečo GitHub Pages cache hlavičky bránia dosiahnuť 100. Building in public, štvrtý diel.'
+title: 'PageSpeed 100 na GitHub Pages — od 87 po perfektné skóre'
+description: 'Lighthouse ukázal Performance 87 na mobile. Self-hosting fontov, WCAG kontrast, trailing slash — a ako sa dá dosiahnuť 100/100/100/100 aj na GitHub Pages. Building in public, štvrtý diel.'
 pubDate: 2026-03-08T10:00:00
 tags: ['astro', 'performance', 'github-pages', 'building-in-public']
 draft: false
@@ -223,15 +223,13 @@ Po všetkých optimalizáciách:
 | Preset | Performance | Accessibility | Best Practices | SEO |
 |--------|-------------|---------------|----------------|-----|
 | Desktop | **100** | **100** | 100 | 100 |
-| Mobile | **99** | **100** | 100 | 100 |
+| Mobile | **100** | **100** | 100 | 100 |
 
-Desktop je na **100/100/100/100**. Mobile Performance skočil z 87 na **99** — FCP klesol z 3.0 s na 1.1 s. Accessibility z 94 na **100**.
+**100/100/100/100** na desktop aj mobile. Performance skočil z 87 na **100** — FCP klesol z 3.0 s na 1.1 s, LCP z 3.0 s na 2.1 s. Accessibility z 94 na **100**.
 
-## Prečo mobile nie je 100 na produkcii
+### Metriky pred a po (mobile)
 
-Lighthouse mobile preset nie je len test — simuluje reálne podmienky, s akými sa stretávajú ľudia na pomalšom mobilnom internete. A nie je ich málo: podľa Google [Think with Google](https://www.thinkwithgoogle.com/marketing-strategies/app-and-mobile/mobile-page-speed-new-industry-benchmarks/) **53% mobilných návštevníkov opustí stránku, ak sa načítava viac ako 3 sekundy**.
-
-### Čo sa podarilo optimalizovať
+Lighthouse mobile preset simuluje reálne podmienky — **pomalé 4G** (1.6 Mbps, 150 ms RTT) na zariadení Moto G Power. Podľa Google [Think with Google](https://www.thinkwithgoogle.com/marketing-strategies/app-and-mobile/mobile-page-speed-new-industry-benchmarks/) **53% mobilných návštevníkov opustí stránku, ak sa načítava viac ako 3 sekundy**.
 
 | Metrika | Pred | Po | Zmena |
 |---------|------|-----|-------|
@@ -243,18 +241,6 @@ Lighthouse mobile preset nie je len test — simuluje reálne podmienky, s akým
 
 FCP klesol na tretinu — používateľ vidí obsah takmer okamžite. LCP z 3.0 s na 2.1 s znamená, že hlavný obsah je kompletne vykreslený za ~2 sekundy. TBT 0 a CLS 0 — stránka je okamžite funkčná a nič neskáče.
 
-### Čo stále brzdí: posledný bod na GitHub Pages
-
-GitHub Pages má tvrdé limity, ktoré nedokážete obísť:
-
-**Cache hlavičky** — GitHub Pages nastavuje `Cache-Control: max-age=600` (10 minút) pre **všetky** statické assety. Aj pre súbory s hash v názve (napr. `_page_.DYzwY8gP.css`), ktoré by ideálne mali `max-age=31536000` (1 rok) s `immutable` flagom. Na toto nemáte vplyv — GitHub Pages nepodporuje vlastné cache hlavičky.
-
-**Žiadne edge caching** — obsah sa servuje z jedného regiónu. CDN ako Cloudflare alebo Vercel majú edge nodes po celom svete a servujú z najbližšieho servera.
-
-**Žiadna kompresia kontrola** — nemôžete nastaviť Brotli kompresiu namiesto gzip, ani optimalizovať response hlavičky.
-
-Toto je faktor, ktorý stojí posledný bod. Na localhost (bez latencie) je všetko 100/100 — produkčná penalizácia je čisto sieťová.
-
 ### Prehľad optimalizácií
 
 | Optimalizácia | Dopad | Stav |
@@ -265,13 +251,20 @@ Toto je faktor, ktorý stojí posledný bod. Na localhost (bez latencie) je vše
 | WCAG kontrast (dark + light) | 100% Accessibility | Hotové |
 | Terminal farby cez CSS triedy | WCAG AA v oboch režimoch | Hotové |
 | Preconnect na Umami API | Ušetrí ~270 ms LCP | Hotové |
-| CDN (Cloudflare/Vercel) | Edge caching, dlhší cache, Brotli | Zvážiť |
+
+## Limity GitHub Pages — na čo si dať pozor
+
+Aj keď sa podarilo dosiahnuť 100, GitHub Pages má tvrdé limity, ktoré môžu ovplyvniť väčšie weby:
+
+**Cache hlavičky** — GitHub Pages nastavuje `Cache-Control: max-age=600` (10 minút) pre **všetky** statické assety. Aj pre súbory s hash v názve (napr. `_page_.DYzwY8gP.css`), ktoré by ideálne mali `max-age=31536000` (1 rok) s `immutable` flagom. Na toto nemáte vplyv — GitHub Pages nepodporuje vlastné cache hlavičky.
+
+**Žiadne edge caching** — obsah sa servuje z jedného regiónu. CDN ako Cloudflare alebo Vercel majú edge nodes po celom svete a servujú z najbližšieho servera.
+
+**Žiadna kompresia kontrola** — nemôžete nastaviť Brotli kompresiu namiesto gzip, ani optimalizovať response hlavičky.
 
 <div class="callout note">
 
-Pre statický web na GitHub Pages je **Performance 99 na mobile** vynikajúci výsledok. Stránka sa na simulovanom pomalom 4G načíta za ~1.1 sekundy do prvého vykreslenia a za ~2.1 s kompletne. Žiadny JavaScript neblokuje interakciu, žiadny layout shift.
-
-Posledný bod k 100 by priniesol CDN s edge cachingom a dlhšími cache hlavičkami — to je však rozhodnutie o infraštruktúre, nie o kóde.
+Pri malom statickom webe bez veľkých obrázkov sa dá dosiahnuť **100/100/100/100 aj na GitHub Pages**. Pri väčšom webe s viacerými assetmi by tieto limity mohli stáť body — vtedy stojí za zváženie CDN ako Cloudflare alebo migrácia na Vercel/Netlify.
 
 </div>
 
