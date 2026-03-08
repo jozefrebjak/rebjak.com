@@ -87,6 +87,7 @@ const enUrl = new URL(lang === "en" ? Astro.url.pathname : altPath, Astro.site);
     <!-- Fonts (self-hosted, loaded via @font-face in global.css) -->
     <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-latin.woff2" crossorigin />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/jetbrains-mono-latin.woff2" crossorigin />
+    <link rel="preconnect" href="https://api-gateway.umami.dev" crossorigin />
 
     <!-- Umami Analytics -->
     <script
