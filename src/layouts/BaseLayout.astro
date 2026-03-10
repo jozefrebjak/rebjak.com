@@ -11,7 +11,7 @@ interface Props {
   ogType?: string;
   alternatePath?: string;
   noindex?: boolean;
-  jsonLd?: Record<string, unknown>;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
 const {
@@ -97,8 +97,9 @@ const enUrl = new URL(lang === "en" ? Astro.url.pathname : altPath, Astro.site);
       is:inline></script>
 
     <!-- JSON-LD -->
-    {jsonLd && (
-      <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    {jsonLd && (Array.isArray(jsonLd)
+      ? jsonLd.map((ld) => <script type="application/ld+json" set:html={JSON.stringify(ld)} />)
+      : <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
     )}
 
     <!-- Dark mode: prevent flash -->

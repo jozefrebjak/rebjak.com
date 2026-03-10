@@ -1,0 +1,164 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { useTranslations, getLangFromUrl } from "../../i18n/translations";
+import { categoryLabels, type ProjectCategory } from "../../data/projects";
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+export async function getStaticPaths() {
+  const projects = await getCollection("portfolioSk");
+  return projects.map((project) => ({
+    params: { slug: project.id.replace(/\.md$/, "") },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+const slug = project.id.replace(/\.md$/, "");
+const ogImage = new URL(`/portfolio/og/${slug}.png`, Astro.site).href;
+const canonicalUrl = new URL(`/portfolio/${slug}/`, Astro.site).href;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "CreativeWork",
+  name: project.data.title,
+  description: project.data.description,
+  url: canonicalUrl,
+  image: ogImage,
+  author: { "@type": "Person", name: "Jozef Rebjak", url: "https://rebjak.com" },
+  keywords: project.data.tags,
+  inLanguage: "sk",
+  ...(project.data.url && { mainEntityOfPage: project.data.url }),
+  ...(project.data.source && { codeRepository: project.data.source }),
+};
+
+const breadcrumbLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: t("portfolio.title"), item: new URL("/portfolio/", Astro.site).href },
+    { "@type": "ListItem", position: 2, name: project.data.title, item: canonicalUrl },
+  ],
+};
+---
+
+<BaseLayout title={`${project.data.title} · ${t("portfolio.title")}`} description={project.data.description} ogImage={ogImage} jsonLd={[jsonLd, breadcrumbLd]}>
+  <article class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+    <a
+      href="/portfolio/"
+      class="inline-flex items-center gap-1 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 mb-8 transition-colors"
+    >
+      {t("portfolio.back")}
+    </a>
+
+    <header class="mb-10">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="px-2.5 py-1 rounded-full text-xs font-medium border border-zinc-200 dark:border-zinc-700/80 text-zinc-500 dark:text-zinc-400">
+          {categoryLabels[project.data.category as ProjectCategory][lang]}
+        </span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-bold text-zinc-900 dark:text-zinc-100 leading-tight mb-4">
+        {project.data.title}
+      </h1>
+      <p class="text-zinc-600 dark:text-zinc-400 text-lg mb-4">
+        {project.data.description}
+      </p>
+      <div class="flex flex-wrap gap-1.5 mb-6">
+        {project.data.tags.map((tag) => (
+          <span class="px-2 py-0.5 rounded text-xs font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+            {tag}
+          </span>
+        ))}
+      </div>
+      <div class="flex gap-4 text-sm">
+        {project.data.url && (
+          <a
+            href={project.data.url}
+            target="_blank"
+            rel="noopener"
+            class="text-[var(--color-brand)] dark:text-[var(--color-brand-dark)] hover:underline font-medium"
+          >
+            {t("portfolio.view")} →
+          </a>
+        )}
+        {project.data.source && (
+          <a
+            href={project.data.source}
+            target="_blank"
+            rel="noopener"
+            class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:underline"
+          >
+            {t("portfolio.source")}
+          </a>
+        )}
+      </div>
+    </header>
+
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
+
+<script>
+  document.querySelectorAll(".prose table").forEach((table) => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "table-wrapper";
+    table.parentNode!.insertBefore(wrapper, table);
+    wrapper.appendChild(table);
+  });
+
+  document.querySelectorAll(".prose pre").forEach((pre) => {
+    const wrapper = document.createElement("div");
+    wrapper.className = "code-block-wrapper";
+    pre.parentNode!.insertBefore(wrapper, pre);
+    wrapper.appendChild(pre);
+
+    const btn = document.createElement("button");
+    btn.className = "copy-btn";
+    btn.textContent = "Kopírovať";
+    btn.setAttribute("aria-label", "Kopírovať kód");
+    wrapper.appendChild(btn);
+
+    btn.addEventListener("click", async () => {
+      const code = (pre.querySelector("code") ?? pre).textContent ?? "";
+      await navigator.clipboard.writeText(code);
+      btn.textContent = "✓ Skopírované";
+      setTimeout(() => {
+        btn.textContent = "Kopírovať";
+      }, 2000);
+    });
+  });
+
+  // Diagram lightbox
+  const overlay = document.createElement("div");
+  overlay.className = "diagram-lightbox";
+  document.body.appendChild(overlay);
+
+  overlay.addEventListener("click", () => {
+    overlay.classList.remove("active");
+    overlay.innerHTML = "";
+  });
+
+  document.querySelectorAll(".diagram-zoom").forEach((diagram) => {
+    diagram.addEventListener("click", () => {
+      const visibleImg = diagram.querySelector<HTMLImageElement>("img:not([style*='display: none'])") ??
+        diagram.querySelector<HTMLImageElement>(`img.${document.documentElement.classList.contains("dark") ? "diagram-dark" : "diagram-light"}`);
+      if (!visibleImg) return;
+      const clone = visibleImg.cloneNode() as HTMLImageElement;
+      overlay.innerHTML = "";
+      overlay.appendChild(clone);
+      overlay.classList.add("active");
+    });
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      overlay.classList.remove("active");
+      overlay.innerHTML = "";
+    }
+  });
+</script>
