@@ -291,4 +291,51 @@
     .dark .term-violet { color: #a78bfa; } /* violet-400 — 7.2:1 on dark */
     .dark .term-blue { color: #29b6f6; }  /* light-blue — 8.5:1 on dark */
     .dark .term-red { color: #f87171; }   /* red-400 — 7.1:1 on dark */
+
+    /* ── Diagram: light/dark switching ───────────── */
+    .diagram-zoom .diagram-dark { display: none; }
+    .dark .diagram-zoom .diagram-light { display: none; }
+    .dark .diagram-zoom .diagram-dark { display: block; }
+
+    /* ── Diagram: hover zoom + cursor ────────────── */
+    .diagram-zoom {
+        @apply my-8 rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800 cursor-zoom-in;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .diagram-zoom:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 30px rgb(0 0 0 / 0.1);
+    }
+    .dark .diagram-zoom:hover {
+        box-shadow: 0 8px 30px rgb(0 0 0 / 0.4);
+    }
+    .diagram-zoom img {
+        @apply w-full h-auto block;
+    }
+
+    /* ── Diagram: lightbox overlay ───────────────── */
+    .diagram-lightbox {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgb(0 0 0 / 0.8);
+        backdrop-filter: blur(8px);
+        cursor: zoom-out;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+        pointer-events: none;
+    }
+    .diagram-lightbox.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    .diagram-lightbox img {
+        max-width: 95vw;
+        max-height: 90vh;
+        border-radius: 12px;
+        box-shadow: 0 20px 60px rgb(0 0 0 / 0.5);
+    }
 }

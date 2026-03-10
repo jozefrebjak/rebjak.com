@@ -36,6 +36,9 @@ export const ui = {
     'portfolio.subtitle': 'Projekty, na ktorých som pracoval',
     'portfolio.view': 'Zobraziť projekt',
     'portfolio.source': 'Zdrojový kód',
+    'portfolio.detail': 'Detail',
+    'portfolio.back': '← Späť na portfólio',
+    'portfolio.allCategories': 'Všetky',
 
     // Blog
     'blog.title': 'Blog',
@@ -88,6 +91,9 @@ export const ui = {
     'portfolio.subtitle': 'Projects I\'ve worked on',
     'portfolio.view': 'View project',
     'portfolio.source': 'Source code',
+    'portfolio.detail': 'Details',
+    'portfolio.back': '← Back to portfolio',
+    'portfolio.allCategories': 'All',
 
     // Blog
     'blog.title': 'Blog',

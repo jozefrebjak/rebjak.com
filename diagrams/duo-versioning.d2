@@ -1,0 +1,109 @@
+direction: right
+
+tag: {
+  label: ""
+  style: {
+    border-radius: 12
+    shadow: true
+    fill: transparent
+    stroke: "#71717a"
+    stroke-dash: 0
+  }
+
+  registry: {
+    label: "ghcr.io/ict-solutions-dev/duoauthproxy"
+    shape: rectangle
+    style: {
+      border-radius: 8
+      opacity: 0.7
+      font-size: 14
+    }
+  }
+
+  colon: {
+    label: ":"
+    shape: text
+    style: {
+      font-size: 20
+      bold: true
+    }
+  }
+
+  project_ver: {
+    label: "1.2.0"
+    shape: rectangle
+    style: {
+      border-radius: 8
+      shadow: true
+      bold: true
+      font-size: 18
+    }
+  }
+
+  dash: {
+    label: "—"
+    shape: text
+    style: {
+      font-size: 20
+    }
+  }
+
+  duo_prefix: {
+    label: "duo"
+    shape: text
+    style: {
+      font-size: 16
+      italic: true
+      opacity: 0.7
+    }
+  }
+
+  duo_ver: {
+    label: "6.6.0"
+    shape: rectangle
+    style: {
+      border-radius: 8
+      shadow: true
+      bold: true
+      font-size: 18
+    }
+  }
+
+  registry -> colon: "" { style.opacity: 0 }
+  colon -> project_ver: "" { style.opacity: 0 }
+  project_ver -> dash: "" { style.opacity: 0 }
+  dash -> duo_prefix: "" { style.opacity: 0 }
+  duo_prefix -> duo_ver: "" { style.opacity: 0 }
+}
+
+project_label: {
+  label: "Project version\nMajor.Minor.Patch"
+  shape: text
+  style: {
+    font-size: 13
+    italic: true
+  }
+}
+
+duo_label: {
+  label: "Duo upstream version"
+  shape: text
+  style: {
+    font-size: 13
+    italic: true
+  }
+}
+
+project_label -> tag.project_ver: "" {
+  style: {
+    stroke-dash: 3
+    opacity: 0.5
+  }
+}
+
+duo_label -> tag.duo_ver: "" {
+  style: {
+    stroke-dash: 3
+    opacity: 0.5
+  }
+}

@@ -1,73 +1,156 @@
 ---
 export const prerender = true;
+import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { useTranslations } from "../../i18n/translations";
+import { categories, categoryLabels, type ProjectCategory } from "../../data/projects";
 
 const lang = "en" as const;
 const t = useTranslations(lang);
 
-const projects = [
-  {
-    name: "rebjak.com",
-    desc: "Personal website built with Astro 5, featuring i18n, dark mode and blog.",
-    tags: ["Astro", "Tailwind", "TypeScript"],
-    url: "https://rebjak.com",
-    source: "https://github.com/jozefrebjak/rebjak.com",
-  },
-];
+const allProjects = await getCollection("portfolioEn");
+const projects = allProjects.sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0));
 ---
 
 <BaseLayout title={t("portfolio.title")} description={t("portfolio.subtitle")}>
   <div class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
-    <div class="mb-10">
+    <div class="mb-8">
       <h1 class="text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-3">
         {t("portfolio.title")}
       </h1>
       <p class="text-zinc-600 dark:text-zinc-400">{t("portfolio.subtitle")}</p>
     </div>
 
-    <div class="grid sm:grid-cols-2 gap-5">
+    <!-- Category filter -->
+    <div class="flex flex-wrap gap-2 mb-10" id="category-filter">
+      <button
+        data-category="all"
+        class="filter-btn active px-4 py-1.5 rounded-full text-sm font-medium border transition-colors"
+      >
+        {t("portfolio.allCategories")}
+      </button>
       {
-        projects.map(({ name, desc, tags, url, source }) => (
-          <article class="flex flex-col p-5 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors">
-            <h2 class="font-semibold text-zinc-900 dark:text-zinc-100 mb-2">
-              {name}
-            </h2>
-            <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 flex-1">
-              {desc}
-            </p>
-            <div class="flex flex-wrap gap-1.5 mb-4">
-              {tags.map((tag) => (
-                <span class="px-2 py-0.5 rounded text-xs font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
-                  {tag}
+        categories.map((cat) => {
+          const count = projects.filter((p) => p.data.category === cat).length;
+          if (count === 0) return null;
+          return (
+            <button
+              data-category={cat}
+              class="filter-btn px-4 py-1.5 rounded-full text-sm font-medium border transition-colors"
+            >
+              {categoryLabels[cat][lang]}
+              <span class="ml-1 text-xs opacity-60">{count}</span>
+            </button>
+          );
+        })
+      }
+    </div>
+
+    <!-- Projects grid -->
+    <div class="grid sm:grid-cols-2 gap-5" id="projects-grid">
+      {
+        projects.map((project) => {
+          const slug = project.id.replace(/\.md$/, "");
+          return (
+            <article
+              class="project-card flex flex-col p-5 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all"
+              data-category={project.data.category}
+            >
+              <div class="flex items-center gap-2 mb-3">
+                <span class="px-2 py-0.5 rounded text-[11px] font-medium uppercase tracking-wider bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400">
+                  {categoryLabels[project.data.category as ProjectCategory][lang]}
                 </span>
-              ))}
-            </div>
-            <div class="flex gap-3 text-sm">
-              {url && (
+              </div>
+              <h3 class="font-semibold text-zinc-900 dark:text-zinc-100 mb-2">
                 <a
-                  href={url}
-                  target="_blank"
-                  rel="noopener"
+                  href={`/en/portfolio/${slug}/`}
+                  class="hover:text-[var(--color-brand)] dark:hover:text-[var(--color-brand-dark)] transition-colors"
+                >
+                  {project.data.title}
+                </a>
+              </h3>
+              <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4 flex-1">
+                {project.data.description}
+              </p>
+              <div class="flex flex-wrap gap-1.5 mb-4">
+                {project.data.tags.map((tag) => (
+                  <span class="px-2 py-0.5 rounded text-xs font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+              <div class="flex gap-3 text-sm mt-auto">
+                <a
+                  href={`/en/portfolio/${slug}/`}
                   class="text-[var(--color-brand)] dark:text-[var(--color-brand-dark)] hover:underline font-medium"
                 >
-                  {t("portfolio.view")} →
+                  {t("portfolio.detail")} →
                 </a>
-              )}
-              {source && (
-                <a
-                  href={source}
-                  target="_blank"
-                  rel="noopener"
-                  class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:underline"
-                >
-                  {t("portfolio.source")}
-                </a>
-              )}
-            </div>
-          </article>
-        ))
+                {project.data.source && (
+                  <a
+                    href={project.data.source}
+                    target="_blank"
+                    rel="noopener"
+                    class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:underline"
+                  >
+                    {t("portfolio.source")}
+                  </a>
+                )}
+              </div>
+            </article>
+          );
+        })
       }
     </div>
   </div>
 </BaseLayout>
+
+<style is:global>
+  .filter-btn {
+    border-color: rgb(228 228 231);
+    color: rgb(113 113 122);
+    background: transparent;
+    cursor: pointer;
+  }
+  .dark .filter-btn {
+    border-color: rgb(63 63 70);
+    color: rgb(161 161 170);
+  }
+  .filter-btn.active {
+    border-color: var(--color-brand);
+    color: var(--color-brand);
+    background: oklch(0.62 0.20 220 / 0.08);
+  }
+  .dark .filter-btn.active {
+    border-color: var(--color-brand-dark);
+    color: var(--color-brand-dark);
+    background: oklch(0.72 0.18 220 / 0.1);
+  }
+  .project-card[data-hidden] {
+    display: none;
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const buttons = document.querySelectorAll<HTMLButtonElement>(".filter-btn");
+    const cards = document.querySelectorAll<HTMLElement>(".project-card");
+
+    buttons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const category = btn.dataset.category;
+
+        buttons.forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        cards.forEach((card) => {
+          if (category === "all" || card.dataset.category === category) {
+            delete card.dataset.hidden;
+          } else {
+            card.dataset.hidden = "";
+          }
+        });
+      });
+    });
+  });
+</script>

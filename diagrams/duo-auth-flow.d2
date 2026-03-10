@@ -1,0 +1,86 @@
+direction: right
+
+client: {
+  label: "VPN Client"
+  shape: rectangle
+  style: {
+    border-radius: 12
+    shadow: true
+  }
+}
+
+fortigate: {
+  label: "FortiGate"
+  shape: rectangle
+  style: {
+    border-radius: 12
+    shadow: true
+  }
+}
+
+duoauthproxy: {
+  label: "Duo Auth Proxy\n(Docker)"
+  shape: rectangle
+  style: {
+    border-radius: 12
+    shadow: true
+    bold: true
+  }
+}
+
+backend: {
+  label: ""
+  style: {
+    border-radius: 12
+    stroke-dash: 3
+  }
+
+  freeradius: {
+    label: "FreeRADIUS"
+    shape: rectangle
+    style: {
+      border-radius: 8
+      shadow: true
+    }
+  }
+
+  mariadb: {
+    label: "MariaDB"
+    shape: cylinder
+    style: {
+      shadow: true
+    }
+  }
+
+  freeradius -> mariadb: "SQL" {
+    style: {
+      stroke-dash: 3
+      opacity: 0.6
+    }
+  }
+}
+
+duo_cloud: {
+  label: "Duo Cloud\n(2FA)"
+  shape: cloud
+  style: {
+    shadow: true
+  }
+}
+
+client -> fortigate: "1. VPN/SSL" {
+  style.stroke-width: 3
+}
+fortigate -> duoauthproxy: "2. RADIUS" {
+  style.stroke-width: 3
+}
+duoauthproxy -> backend.freeradius: "3. Verify password" {
+  style.stroke-width: 2
+}
+duoauthproxy -> duo_cloud: "4. 2FA Push" {
+  style.stroke-width: 3
+}
+duoauthproxy -> fortigate: "5. Accept / Reject" {
+  style.stroke-width: 2
+  style.stroke-dash: 5
+}
