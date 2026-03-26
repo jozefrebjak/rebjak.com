@@ -111,6 +111,67 @@ function readingTime(body: string): number {
     wrapper.appendChild(table);
   });
 
+  // Image lightbox
+  const overlay = document.createElement("div");
+  overlay.className = "diagram-lightbox";
+  overlay.setAttribute("role", "dialog");
+  overlay.setAttribute("aria-label", "Image preview");
+  document.body.appendChild(overlay);
+
+  function closeLightbox() {
+    overlay.classList.remove("active");
+    setTimeout(() => { overlay.innerHTML = ""; }, 300);
+  }
+
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay || (e.target as Element).classList.contains("lightbox-close")) {
+      closeLightbox();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && overlay.classList.contains("active")) {
+      closeLightbox();
+    }
+  });
+
+  document.querySelectorAll(".prose figure a[data-lightbox] img").forEach((img) => {
+    img.closest("a")!.addEventListener("click", (e) => {
+      e.preventDefault();
+      const clone = img.cloneNode(true) as HTMLImageElement;
+      clone.style.cssText = "";
+      const closeBtn = document.createElement("button");
+      closeBtn.className = "lightbox-close";
+      closeBtn.setAttribute("aria-label", "Close");
+      closeBtn.innerHTML = "&#x2715;";
+      overlay.innerHTML = "";
+      overlay.appendChild(closeBtn);
+      overlay.appendChild(clone);
+      overlay.classList.add("active");
+    });
+  });
+
+  // Diagram-zoom lightbox
+  document.querySelectorAll(".prose .diagram-zoom").forEach((diagram) => {
+    diagram.addEventListener("click", () => {
+      const isDark = document.documentElement.classList.contains("dark");
+      const visibleImg = diagram.querySelector<HTMLImageElement>(isDark ? "img.diagram-dark" : "img.diagram-light")
+        ?? diagram.querySelector<HTMLImageElement>("img");
+      if (!visibleImg) return;
+      const clone = visibleImg.cloneNode(true) as HTMLImageElement;
+      clone.className = "";
+      clone.style.cssText = "display: block;";
+      const closeBtn = document.createElement("button");
+      closeBtn.className = "lightbox-close";
+      closeBtn.setAttribute("aria-label", "Close");
+      closeBtn.innerHTML = "&#x2715;";
+      overlay.innerHTML = "";
+      overlay.appendChild(closeBtn);
+      overlay.appendChild(clone);
+      overlay.classList.add("active");
+    });
+  });
+
   document.querySelectorAll(".prose pre").forEach((pre) => {
     const wrapper = document.createElement("div");
     wrapper.className = "code-block-wrapper";
