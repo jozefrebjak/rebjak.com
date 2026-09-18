@@ -243,6 +243,60 @@
         @apply text-amber-600 dark:text-amber-400;
     }
 
+    /* ── Repo promo card (CTA) ──────────────────── */
+    .prose .repo-card {
+        @apply my-10 flex flex-col gap-5 rounded-2xl border border-zinc-200 bg-white p-6 no-underline sm:flex-row sm:items-center dark:border-zinc-800 dark:bg-zinc-900/40;
+        background-image: radial-gradient(120% 140% at 0% 0%, color-mix(in oklch, var(--color-brand) 10%, transparent) 0%, transparent 55%);
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .prose a.repo-card:hover {
+        @apply border-zinc-300 dark:border-zinc-700;
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgb(0 0 0 / 0.08);
+    }
+
+    .dark .prose a.repo-card:hover {
+        box-shadow: 0 12px 30px rgb(0 0 0 / 0.45);
+    }
+
+    .prose .repo-card__mark {
+        @apply hidden h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-zinc-900 text-white sm:flex dark:bg-white dark:text-zinc-900;
+    }
+
+    .prose .repo-card__mark svg {
+        @apply h-8 w-8;
+    }
+
+    .prose .repo-card__body {
+        @apply min-w-0 flex-1;
+    }
+
+    .prose .repo-card__name {
+        @apply font-mono text-base font-semibold text-zinc-900 dark:text-zinc-100;
+    }
+
+    .prose .repo-card__desc {
+        @apply mt-1 mb-0 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400;
+    }
+
+    .prose .repo-card__meta {
+        @apply mt-3 flex flex-wrap items-center gap-2;
+    }
+
+    .prose .repo-card__tag {
+        @apply rounded-full border border-zinc-200 px-2.5 py-0.5 font-mono text-xs text-zinc-600 dark:border-zinc-700 dark:text-zinc-400;
+    }
+
+    .prose .repo-card__cta {
+        @apply inline-flex shrink-0 items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white;
+        background-image: linear-gradient(135deg, var(--color-brand), var(--color-violet));
+    }
+
+    .prose a.repo-card:hover .repo-card__cta {
+        @apply brightness-110;
+    }
+
     /* ── Code block copy button ─────────────────── */
     .code-block-wrapper {
         @apply relative my-6;
